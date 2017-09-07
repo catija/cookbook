@@ -9,10 +9,14 @@
 		<title>Catija's Cookbook</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+
+		{% block header %}{% endblock %}
+
 		<!--[if lte IE 8]><script src="{{ url_for('static', filename='assets/js/ie/html5shiv.js') }}"></script><![endif]-->
 		<link href="{{ url_for('static', filename='assets/css/main.css') }}" rel="stylesheet">
 		<!--[if lte IE 9]><link rel="stylesheet" href="{{ url_for('static', filename='assets/css/ie9.css') }}" /><![endif]-->
 		<!--[if lte IE 8]><link rel="stylesheet" href="{{ url_for('static', filename='assets/css/ie8.css') }}" /><![endif]-->
+
 	</head>
 	<body>
 
@@ -23,124 +27,7 @@
 					<div id="main">
 						<div class="inner">
 
-							<!-- Header -->
-								<header id="header">
-									<a href="index.html" class="logo"><strong>Catija's</strong> Cookbook</a>
-								</header>
-
-							<!-- Banner -->
-								<section id="banner">
-									<div class="content">
-										<header>
-											<h1>Welcome to the recipe collection!</h1>
-											<p>Derived from many sources.</p>
-										</header>
-										<p>
-											This is a collection of recipes derived form many sources, lightly modified,
-											and tested at home.
-										</p>
-										<ul class="actions">
-											<li><a href="#" class="button big">Learn More</a></li>
-										</ul>
-									</div>
-									<span class="image object">
-										<img src="{{ url_for('static', filename='images/kitchen_right.jpg') }}" alt="" />
-									</span>
-								</section>
-
-							<!-- Section -->
-								<section>
-									<header class="major">
-										<h2>Frequently Made</h2>
-									</header>
-									<div class="features">
-										<article>
-											<span class="icon fa-cutlery"></span>
-											<div class="content">
-												<h3>Skillet Pasta</h3>
-												<p>Aenean ornare velit lacus, ac varius enim lorem ullamcorper dolore. Proin aliquam facilisis ante interdum. Sed nulla amet lorem feugiat tempus aliquam.</p>
-											</div>
-										</article>
-										<article>
-											<span class="icon fa-glass"></span>
-											<div class="content">
-												<h3>Cornbread</h3>
-												<p>Aenean ornare velit lacus, ac varius enim lorem ullamcorper dolore. Proin aliquam facilisis ante interdum. Sed nulla amet lorem feugiat tempus aliquam.</p>
-											</div>
-										</article>
-										<article>
-											<span class="icon fa-coffee"></span>
-											<div class="content">
-												<h3>Pasta Sauce</h3>
-												<p>Aenean ornare velit lacus, ac varius enim lorem ullamcorper dolore. Proin aliquam facilisis ante interdum. Sed nulla amet lorem feugiat tempus aliquam.</p>
-											</div>
-										</article>
-										<article>
-											<span class="icon fa-shopping-cart"></span>
-											<div class="content">
-												<h3>Bison Stew</h3>
-												<p>Aenean ornare velit lacus, ac varius enim lorem ullamcorper dolore. Proin aliquam facilisis ante interdum. Sed nulla amet lorem feugiat tempus aliquam.</p>
-											</div>
-										</article>
-									</div>
-								</section>
-
-							<!-- Section -->
-								<section>
-									<header class="major">
-										<h2>Recent Additions</h2>
-									</header>
-									<div class="posts">
-										<article>
-											<a href="#" class="image"><img src="{{ url_for('static', filename='images/pic01.jpg') }}" alt="" /></a>
-											<h3>Interdum aenean</h3>
-											<p>Aenean ornare velit lacus, ac varius enim lorem ullamcorper dolore. Proin aliquam facilisis ante interdum. Sed nulla amet lorem feugiat tempus aliquam.</p>
-											<ul class="actions">
-												<li><a href="#" class="button">More</a></li>
-											</ul>
-										</article>
-										<article>
-											<a href="#" class="image"><img src="{{ url_for('static', filename='images/pic02.jpg') }}" alt="" /></a>
-											<h3>Nulla amet dolore</h3>
-											<p>Aenean ornare velit lacus, ac varius enim lorem ullamcorper dolore. Proin aliquam facilisis ante interdum. Sed nulla amet lorem feugiat tempus aliquam.</p>
-											<ul class="actions">
-												<li><a href="#" class="button">More</a></li>
-											</ul>
-										</article>
-										<article>
-											<a href="#" class="image"><img src="{{ url_for('static', filename='images/pic03.jpg') }}" alt="" /></a>
-											<h3>Tempus ullamcorper</h3>
-											<p>Aenean ornare velit lacus, ac varius enim lorem ullamcorper dolore. Proin aliquam facilisis ante interdum. Sed nulla amet lorem feugiat tempus aliquam.</p>
-											<ul class="actions">
-												<li><a href="#" class="button">More</a></li>
-											</ul>
-										</article>
-										<article>
-											<a href="#" class="image"><img src="{{ url_for('static', filename='images/pic04.jpg') }}" alt="" /></a>
-											<h3>Sed etiam facilis</h3>
-											<p>Aenean ornare velit lacus, ac varius enim lorem ullamcorper dolore. Proin aliquam facilisis ante interdum. Sed nulla amet lorem feugiat tempus aliquam.</p>
-											<ul class="actions">
-												<li><a href="#" class="button">More</a></li>
-											</ul>
-										</article>
-										<article>
-											<a href="#" class="image"><img src="{{ url_for('static', filename='images/pic05.jpg') }}" alt="" /></a>
-											<h3>Feugiat lorem aenean</h3>
-											<p>Aenean ornare velit lacus, ac varius enim lorem ullamcorper dolore. Proin aliquam facilisis ante interdum. Sed nulla amet lorem feugiat tempus aliquam.</p>
-											<ul class="actions">
-												<li><a href="#" class="button">More</a></li>
-											</ul>
-										</article>
-										<article>
-											<a href="#" class="image"><img src="{{ url_for('static', filename='images/pic06.jpg') }}" alt="" /></a>
-											<h3>Amet varius aliquam</h3>
-											<p>Aenean ornare velit lacus, ac varius enim lorem ullamcorper dolore. Proin aliquam facilisis ante interdum. Sed nulla amet lorem feugiat tempus aliquam.</p>
-											<ul class="actions">
-												<li><a href="#" class="button">More</a></li>
-											</ul>
-										</article>
-									</div>
-								</section>
+							{% block body %}{% endblock %}
 
 						</div>
 					</div>
@@ -217,6 +104,6 @@
 			<script src="{{ url_for('static', filename='assets/js/util.js') }}"></script>
 			<!--[if lte IE 8]><script src="{{ url_for('static', filename='assets/js/ie/respond.min.js') }}"></script><![endif]-->
 			<script src="{{ url_for('static', filename='assets/js/main.js') }}"></script>
-
+			{% block footer %}{% endblock %}
 	</body>
 </html>
