@@ -52,6 +52,14 @@
 										<li><a href="{{ url_for('welcome') }}">Homepage</a></li>
 										<li><a href="{{ url_for('random_recipe') }}">Random Recipe</a></li>
 										<li>
+											<span class="opener">Preparation Method</span>
+											<ul>
+												{% for recipe_type in recipe_types %}
+													<li><a href="#">{{ recipe_type.name }}</a></li>
+												{% endfor %}
+											</ul>
+										</li>
+										<li>
 											<span class="opener">Meal Types</span>
 											<ul>
 												<li><a href="#">Breakfast</a></li>
