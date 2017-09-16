@@ -1,6 +1,7 @@
 from flask import render_template
 
-from cookbook_ws import app, orm
+from cookbook_ws import app, orm, db
+from cookbook_ws.orm import RecipeType
 
 
 @app.route("/")
@@ -8,7 +9,7 @@ def welcome():
     """
     Main entry point, this method returns the default page for the whole site.
     """
-    recipe_types = orm.get_recipe_types()
+    recipe_types = db.session.query(RecipeType)
     return render_template("index.html", recipe_types=recipe_types)
 
 
