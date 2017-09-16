@@ -29,10 +29,15 @@
         <div class="row">
             <div class="12u 12u$(large)">
                 <p><a href="{{ url_for('export') }}">Export Database</a></p>
-                <p><form>
-                    <input type="file" value="Select Import File">
-                    <input type="submit">
-                    </form></p>
+                <p>
+                    <form method="POST"
+                          id="upload_form"
+                          action="{{ url_for('upload_file') }}"
+                          enctype="multipart/form-data">
+                        <input type="file" name="import_data" id="import_data" value="Select Import File"/>
+                        <input type="submit" value="Upload Data"/>
+                    </form>
+                </p>
             </div>
         </div>
 
