@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+
+{% block header %}
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+
+{% endblock %}
+
+{% block body %}
+
+<!-- Header -->
+    <header id="header">
+        <a href="{{ url_for('welcome') }}" class="logo"><strong>Catija's</strong> Cookbook</a>
+    </header>
+
+<!-- Content -->
+    <section>
+        <header class="main">
+            <h1>Administrative Tools</h1>
+            <p>This page is for administrative purposes only.</p>
+        </header>
+
+        <div class="row">
+            <div class="12u 12u$(large)">
+                <p><a href="{{ url_for('export') }}">Export Database</a></p>
+                <p><form>
+                    <input type="file" value="Select Import File">
+                    <input type="submit">
+                    </form></p>
+            </div>
+        </div>
+
+    </section>
+{% endblock %}

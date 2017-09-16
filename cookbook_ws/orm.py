@@ -9,6 +9,13 @@ class RecipeType(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(250))
 
+    @property
+    def serialize(self):
+        d = {}
+        for column in self.__table__.columns:
+            d[column.name] = str(getattr(self, column.name))
+        return d
+
 
 class Recipe(db.Model):
     __tablename__ = 'recipe'
@@ -25,6 +32,17 @@ class Recipe(db.Model):
     steps = db.relationship("RecipeStep")
     create_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
+    @property
+    def serialize(self):
+        d = {}
+        for column in self.__table__.columns:
+            d[column.name] = str(getattr(self, column.name))
+
+        d['recipe_type'] = self.recipe_type.serialize
+        d['steps'] = [step.serialize for step in self.steps]
+        d['ingredients'] = [ingredient.serialize for ingredient in self.ingredients]
+        return d
+
 
 class RecipeIngredient(db.Model):
     __tablename__ = 'ingredient'
@@ -37,6 +55,13 @@ class RecipeIngredient(db.Model):
     def __repr__(self):
         return "{} {} {}".format(self.amount, self.amount_units, self.name)
 
+    @property
+    def serialize(self):
+        d = {}
+        for column in self.__table__.columns:
+            d[column.name] = str(getattr(self, column.name))
+        return d
+
 
 class RecipeStep(db.Model):
     __tablename__ = "recipe_step"
@@ -45,6 +70,12 @@ class RecipeStep(db.Model):
     step_number = db.Column(db.Integer, nullable=False)
     description = db.Column(db.String(250), nullable=False)
 
+    @property
+    def serialize(self):
+        d = {}
+        for column in self.__table__.columns:
+            d[column.name] = str(getattr(self, column.name))
+        return d
 
 def initialize():
 
