@@ -20,7 +20,7 @@ def random_recipe():
 
     TODO: Once we've got the backend implemented, we can change this method to serve a random recipe.
     """
-    recipe_types = orm.get_recipe_types()
+    recipe_types = db.session.query(RecipeType)
     return render_template("recipe_page.html", recipe_types=recipe_types)
 
 
@@ -34,5 +34,5 @@ def reset_db():
 
     orm.initialize()
 
-    recipe_types = orm.get_recipe_types()
+    recipe_types = db.session.query(RecipeType)
     return render_template("recipe_page.html", recipe_types=recipe_types)

@@ -1,3 +1,4 @@
+import logging
 
 from cookbook_ws import db
 
@@ -38,6 +39,9 @@ class RecipeStep(db.Model):
 
 
 def initialize():
+
+    logger = logging.getLogger()
+    logger.critical("Creating new database!")
 
     # Create all the tables based on the model defined above.
     db.create_all()
