@@ -1,0 +1,73 @@
+{% extends "layout.html" %}
+
+{% block header %}
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+
+{% endblock %}
+
+{% block body %}
+
+<!-- Header -->
+    <header id="header">
+        <a href="{{ url_for('welcome') }}" class="logo"><strong>Catija's</strong> Cookbook</a>
+    </header>
+
+<!-- Content -->
+    <section>
+        <header class="main">
+            <h1>{{ recipe.name }}</h1>
+            <p>Source: {{ recipe.source }}</p>
+        </header>
+
+        <div class="row">
+            <div class="12u 12u$(large)">
+                <p>{{ recipe.description }}</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="6u 12u$(small)">
+                <h2>Ingredients</h2>
+                <ul>
+                    {% for ingredient in recipe.ingredients %}
+                        <li>{{ ingredient }}</li>
+                    {% endfor %}
+                </ul>
+
+                <dl>
+                    <dt class="panel-heading collapsed" data-toggle="collapse" data-target="#note2">
+                        <i class="fa fa-fw fa-chevron-down"></i>
+                        <i class="fa fa-fw fa-chevron-right"></i>
+                        Note</dt>
+                    <dd id="note2" class="collapse">
+                        <p>It is imperative to cut the sweet potato into thin, even slices to ensure perfect cooking.
+                        <ol>
+                            <li>Quarter each peeled sweet potato lengthwise.</li>
+                            <li>Cut each quarter into 1/2-inch slices crosswise.</li>
+                        </ol>
+                        </p>
+                    </dd>
+                </dl>
+            </div>
+            <div class="6u$"><span class="image fit"><img src="{{ url_for('static', filename='images/kitchen_left.jpg') }}" alt="" /></span></div>
+        </div>
+
+        <h2>Instructions</h2>
+
+        <ol>
+            {% for step in recipe.steps %}
+                <li>{{ step.description }}</li>
+            {% endfor %}
+        </ol>
+
+        {% if recipe.total_served %}
+        <p>SERVES {{ recipe.total_served }}</p>
+        {% endif %}
+    </section>
+{% endblock %}
