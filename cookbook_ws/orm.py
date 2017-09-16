@@ -3,6 +3,7 @@ import logging
 
 from cookbook_ws import db
 
+
 class RecipeType(db.Model):
     __tablename__ = 'recipe_type'
     id = db.Column(db.Integer, primary_key=True)
@@ -30,8 +31,8 @@ class RecipeIngredient(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(250), nullable=False)
     recipe_id = db.Column(db.Integer, db.ForeignKey('recipe.id'), nullable=False)
-    amount = db.Column(db.Float, nullable=False)
-    amount_units = db.Column(db.String(250), nullable=False)
+    amount = db.Column(db.Float, nullable=True)
+    amount_units = db.Column(db.String(250), nullable=True)
 
     def __repr__(self):
         return "{} {} {}".format(self.amount, self.amount_units, self.name)
@@ -49,6 +50,8 @@ def initialize():
 
     logger = logging.getLogger()
     logger.critical("Creating new database!")
+
+    db.drop_all()
 
     # Create all the tables based on the model defined above.
     db.create_all()
@@ -87,4 +90,36 @@ def initialize():
     new_recipe.total_served = 4
 
     db.session.add(new_recipe)
+
+    db.session.commit()
+
+    new_recipe = Recipe(name='Creamy Mashed Sweet Potatoes',
+                        description="Easy mashed sweet potato recipe.",
+                        source="COOK'S COUNTRY DECEMBER/JANUARY 2007")
+
+    new_recipe.steps = [
+                    RecipeStep(step_number=1,
+                               description=("Combine butter, 2 tablespoons cream, 1/2 teaspoon salt, "
+                                            "1/4 teaspoon pepper, sugar, and sweet potatoes in a large saucepan.")),
+                    RecipeStep(step_number=2,
+                               description=("Cook, covered, over low heat untll potatoes are fall-aparet tender, " ""
+                                            "35 to 40 minutes.")),
+                    RecipeStep(step_number=3,
+                               description=("Turn off heat, add remaining tablespoon cream and "
+                                            "mash sweet potatoes with potato masher.")),
+                    RecipeStep(step_number=4,
+                               description="Serve.")]
+
+    new_recipe.ingredients = [RecipeIngredient(name="unsalted butter, cut into 4 pieces", amount=4, amount_units="Tablespoon"),
+                              RecipeIngredient(name="heavy cream", amount=3, amount_units="tablespoons"),
+                              RecipeIngredient(name="sugar", amount=1, amount_units="teaspoon"),
+                              RecipeIngredient(name=("sweet potatoes (2 large or 3 medium)"
+                                                     "peeled, quartered lengthwise and cut into 1/4 inch slices"),
+                                               amount=2, amount_units="pounds"),
+                              RecipeIngredient(name="salt and pepper")]
+
+    new_recipe.recipe_type = new_recipe_type
+    new_recipe.total_served = 4
+    db.session.add(new_recipe)
+
     db.session.commit()
