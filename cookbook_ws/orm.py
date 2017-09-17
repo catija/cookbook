@@ -133,7 +133,7 @@ def initialize():
                                description=("Combine butter, 2 tablespoons cream, 1/2 teaspoon salt, "
                                             "1/4 teaspoon pepper, sugar, and sweet potatoes in a large saucepan.")),
                     RecipeStep(step_number=2,
-                               description=("Cook, covered, over low heat untll potatoes are fall-aparet tender, " ""
+                               description=("Cook, covered, over low heat until potatoes are fall-apart tender, " ""
                                             "35 to 40 minutes.")),
                     RecipeStep(step_number=3,
                                description=("Turn off heat, add remaining tablespoon cream and "
@@ -141,10 +141,10 @@ def initialize():
                     RecipeStep(step_number=4,
                                description="Serve.")]
 
-    new_recipe.ingredients = [RecipeIngredient(name="unsalted butter, cut into 4 pieces", amount=4, amount_units="Tablespoon"),
+    new_recipe.ingredients = [RecipeIngredient(name="unsalted butter, cut into 4 pieces", amount=12, amount_units="tablespoons"),
                               RecipeIngredient(name="heavy cream", amount=3, amount_units="tablespoons"),
                               RecipeIngredient(name="sugar", amount=1, amount_units="teaspoon"),
-                              RecipeIngredient(name=("sweet potatoes (2 large or 3 medium)"
+                              RecipeIngredient(name=("sweet potatoes (2 large or 3 medium) "
                                                      "peeled, quartered lengthwise and cut into 1/4 inch slices"),
                                                amount=2, amount_units="pounds"),
                               RecipeIngredient(name="salt and pepper")]
