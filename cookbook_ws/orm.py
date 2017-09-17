@@ -110,12 +110,12 @@ def initialize():
                         RecipeStep(step_number=6,
                                    description="Serve.")]
 
-    new_recipe.ingredients = [RecipeIngredient(name="Oats", amount=1, amount_units="Cup"),
-                              RecipeIngredient(name="Water", amount=2, amount_units="Cup"),
-                              RecipeIngredient(name="Apple Cider", amount=1, amount_units="Cup"),
-                              RecipeIngredient(name="Brown Sugar", amount=1, amount_units="Tablespoon"),
-                              RecipeIngredient(name="Cinnamon", amount=0.125, amount_units="Teaspoon"),
-                              RecipeIngredient(name="Salt", amount=0.25, amount_units="Teaspoon")]
+    new_recipe.ingredients = [RecipeIngredient(name="oats", amount=1, amount_units="cup"),
+                              RecipeIngredient(name="water", amount=2, amount_units="cup"),
+                              RecipeIngredient(name="apple cider", amount=1, amount_units="cup"),
+                              RecipeIngredient(name="brown sugar", amount=1, amount_units="tablespoon"),
+                              RecipeIngredient(name="cinnamon", amount=0.125, amount_units="teaspoon"),
+                              RecipeIngredient(name="salt", amount=0.25, amount_units="teaspoon")]
     new_recipe.recipe_type = new_recipe_type
     new_recipe.source = "Modified from Cooks Country"
     new_recipe.total_served = 4
