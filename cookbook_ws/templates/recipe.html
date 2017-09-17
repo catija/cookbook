@@ -34,11 +34,14 @@
         <div class="row">
             <div class="6u 12u$(small)">
                 <h2>Ingredients</h2>
-                <ul>
+                <table>
                     {% for ingredient in recipe.ingredients %}
-                        <li>{{ ingredient }}</li>
+                        <tr>
+                            <td align="right" width="10%">{{ '%0.0f'| format(ingredient.amount|float) if ingredient.amount else '' }}</td>
+                            <td>{{ ingredient.amount_units if ingredient.amount_units else '' }} {{ ingredient.name }}</td>
+                        </tr>
                     {% endfor %}
-                </ul>
+                </table>
 
                 <dl>
                     <dt class="panel-heading collapsed" data-toggle="collapse" data-target="#note2">
