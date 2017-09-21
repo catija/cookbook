@@ -26,6 +26,7 @@ class Recipe(db.Model):
     name = db.Column(db.String(250), nullable=False)
     description = db.Column(db.String(250))
     source = db.Column(db.String(250), nullable=True)
+    source_url = db.Column(db.String(250), nullable=True)
     total_served = db.Column(db.Integer, nullable=True)
     recipe_type_id = db.Column(db.Integer, db.ForeignKey('recipe_type.id'), nullable=True)
     recipe_type = db.relationship("RecipeType")
@@ -127,7 +128,8 @@ def initialize():
                               RecipeIngredient(name="cinnamon", amount=0.125, amount_units="teaspoon"),
                               RecipeIngredient(name="salt", amount=0.25, amount_units="teaspoon")]
     new_recipe.recipe_type = new_recipe_type
-    new_recipe.source = "Modified from Cooks Country"
+    new_recipe.source = "Modified from America's Test Kitchen"
+    new_recipe.source_url = "https://www.americastestkitchen.com/recipes/7021-apple-cinnamon-steel-cut-oatmeal"
     new_recipe.total_served = 4
 
     db.session.add(new_recipe)

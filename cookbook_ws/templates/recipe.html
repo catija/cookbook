@@ -23,7 +23,11 @@
     <section>
         <header class="main">
             <h1>{{ recipe.name }}</h1>
-            <p>Source: {{ recipe.source }}</p>
+            {% if recipe.source_url %}
+                <p>Source: <a href="{{ recipe.source_url }}"> {{ recipe.source }} </a></p>
+            {% elif recipe.source %}
+                <p>Source: {{ recipe.source }}</p>
+            {% endif %}
         </header>
 
         <div class="row">
@@ -72,5 +76,6 @@
         {% if recipe.total_served %}
         <p>SERVES {{ recipe.total_served }}</p>
         {% endif %}
+
     </section>
 {% endblock %}
