@@ -1,6 +1,7 @@
 import datetime
 import logging
 
+from fractions import Fraction
 from cookbook_ws import db
 
 
@@ -61,6 +62,15 @@ class RecipeIngredient(db.Model):
         for column in self.__table__.columns:
             d[column.name] = str(getattr(self, column.name))
         return d
+
+    @property
+    def amount_fract(self):
+        """
+        Converts float to fraction string
+        Returns:
+            str: fraction
+        """
+        return str(Fraction(self.amount))
 
 
 class RecipeStep(db.Model):

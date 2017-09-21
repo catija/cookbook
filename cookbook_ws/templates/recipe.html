@@ -37,7 +37,7 @@
                 <table>
                     {% for ingredient in recipe.ingredients %}
                         <tr>
-                            <td align="right" width="10%">{{ '%0.0f'| format(ingredient.amount|float) if ingredient.amount else '' }}</td>
+                            <td align="right" width="10%">{{ ingredient.amount_fract if ingredient.amount else '' }}</td>
                             <td>{{ ingredient.amount_units if ingredient.amount_units else '' }} {{ ingredient.name }}</td>
                         </tr>
                     {% endfor %}
