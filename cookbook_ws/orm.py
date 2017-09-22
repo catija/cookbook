@@ -32,6 +32,7 @@ class Recipe(db.Model):
     recipe_type = db.relationship("RecipeType")
     ingredients = db.relationship("RecipeIngredient")
     steps = db.relationship("RecipeStep")
+    notes = db.relationship("RecipeNote")
     create_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     @property
@@ -88,6 +89,22 @@ class RecipeStep(db.Model):
             d[column.name] = str(getattr(self, column.name))
         return d
 
+
+class RecipeNote(db.Model):
+    __tablename__ = "recipe_note"
+    id = db.Column(db.Integer, primary_key=True)
+    recipe_id = db.Column(db.Integer, db.ForeignKey('recipe.id'), nullable=False)
+    create_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    note_text = db.Column(db.String(250), nullable=False)
+
+    @property
+    def serialize(self):
+        d = {}
+        for column in self.__table__.columns:
+            d[column.name] = str(getattr(self, column.name))
+        return d
+
+
 def initialize():
 
     logger = logging.getLogger()
@@ -121,12 +138,15 @@ def initialize():
                         RecipeStep(step_number=6,
                                    description="Serve.")]
 
-    new_recipe.ingredients = [RecipeIngredient(name="oats", amount=1, amount_units="cup"),
-                              RecipeIngredient(name="water", amount=2, amount_units="cup"),
-                              RecipeIngredient(name="apple cider", amount=1, amount_units="cup"),
-                              RecipeIngredient(name="brown sugar", amount=1, amount_units="tablespoon"),
-                              RecipeIngredient(name="cinnamon", amount=0.125, amount_units="teaspoon"),
-                              RecipeIngredient(name="salt", amount=0.25, amount_units="teaspoon")]
+    new_recipe.ingredients = [
+        RecipeIngredient(name="oats", amount=1, amount_units="cup"),
+        RecipeIngredient(name="water", amount=2, amount_units="cup"),
+        RecipeIngredient(name="apple cider", amount=1, amount_units="cup"),
+        RecipeIngredient(name="brown sugar", amount=1, amount_units="tablespoon"),
+        RecipeIngredient(name="cinnamon", amount=0.125, amount_units="teaspoon"),
+        RecipeIngredient(name="salt", amount=0.25, amount_units="teaspoon")
+    ]
+
     new_recipe.recipe_type = new_recipe_type
     new_recipe.source = "Modified from America's Test Kitchen"
     new_recipe.source_url = "https://www.americastestkitchen.com/recipes/7021-apple-cinnamon-steel-cut-oatmeal"
@@ -153,13 +173,23 @@ def initialize():
                     RecipeStep(step_number=4,
                                description="Serve.")]
 
-    new_recipe.ingredients = [RecipeIngredient(name="unsalted butter, cut into 4 pieces", amount=12, amount_units="tablespoons"),
-                              RecipeIngredient(name="heavy cream", amount=3, amount_units="tablespoons"),
-                              RecipeIngredient(name="sugar", amount=1, amount_units="teaspoon"),
-                              RecipeIngredient(name=("sweet potatoes (2 large or 3 medium) "
-                                                     "peeled, quartered lengthwise and cut into 1/4 inch slices"),
-                                               amount=2, amount_units="pounds"),
-                              RecipeIngredient(name="salt and pepper")]
+    new_recipe.ingredients = [
+        RecipeIngredient(name="unsalted butter, cut into 4 pieces", amount=12, amount_units="tablespoons"),
+        RecipeIngredient(name="heavy cream", amount=3, amount_units="tablespoons"),
+        RecipeIngredient(name="sugar", amount=1, amount_units="teaspoon"),
+        RecipeIngredient(name=("sweet potatoes (2 large or 3 medium) "
+                               "peeled, quartered lengthwise and cut into 1/4 inch slices"),
+                         amount=2, amount_units="pounds"),
+        RecipeIngredient(name="salt and pepper")
+    ]
+
+    new_recipe.notes = [
+        RecipeNote(note_text=("It is imperative to cut the sweet potato into thin, "
+                              "even slices to ensure perfect cooking."
+                              "<ul><li>Quarter each peeled sweet potato lengthwise.</li>"
+                              "<li>Cut each quarter into 1/2-inch slices crosswise.</li></ul>")),
+        RecipeNote(note_text="This recipe is awesome!")
+    ]
 
     new_recipe.recipe_type = new_recipe_type
     new_recipe.total_served = 4
