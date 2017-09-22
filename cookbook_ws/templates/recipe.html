@@ -46,21 +46,6 @@
                         </tr>
                     {% endfor %}
                 </table>
-
-                <dl>
-                    <dt class="panel-heading collapsed" data-toggle="collapse" data-target="#note2">
-                        <i class="fa fa-fw fa-chevron-down"></i>
-                        <i class="fa fa-fw fa-chevron-right"></i>
-                        Note</dt>
-                    <dd id="note2" class="collapse">
-                        <p>It is imperative to cut the sweet potato into thin, even slices to ensure perfect cooking.
-                        <ol>
-                            <li>Quarter each peeled sweet potato lengthwise.</li>
-                            <li>Cut each quarter into 1/2-inch slices crosswise.</li>
-                        </ol>
-                        </p>
-                    </dd>
-                </dl>
             </div>
             <div class="6u$"><span class="image fit"><img src="{{ url_for('static', filename='images/kitchen_left.jpg') }}" alt="" /></span></div>
         </div>
@@ -78,4 +63,36 @@
         {% endif %}
 
     </section>
+
+	<section>
+		<header class="major">
+			<h2>Notes</h2>
+		</header>
+		<div class="posts">
+            {% for note in recipe.notes %}
+            <article>
+
+                <h3>
+                    {{ note.create_date }}
+                </h3>
+                    <div class="collapsed" data-toggle="collapse" data-target="#note_{{note.id}}">
+
+                        <i class="fa fa-fw fa-chevron-down"></i>
+                        <i class="fa fa-fw fa-chevron-right"></i>
+                    </div>
+
+                <div id="note_{{note.id}}" class="collapse">
+                    {{ note.note_text | safe }}
+                </div>
+            </article>
+        <!--<dl>-->
+            <!--<dt class="panel-heading collapsed" data-toggle="collapse" data-target="#note_{{note.id}}">-->
+                <!--<i class="fa fa-fw fa-chevron-down"></i>-->
+                <!--<i class="fa fa-fw fa-chevron-right"></i>-->
+                <!--Note</dt>-->
+            <!--<dd id="note_{{note.id}}" class="collapse">-->
+            <!--</dd>-->
+        <!--</dl>-->
+        {% endfor %}
+
 {% endblock %}
