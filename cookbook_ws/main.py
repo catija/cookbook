@@ -51,8 +51,7 @@ def reset_db():
 
     orm.initialize()
 
-    recipe_types = db.session.query(RecipeType)
-    return render_template("recipe_page.html", recipe_types=recipe_types)
+    return redirect(url_for('show_recipe', recipe_id=1))
 
 
 def object_as_dict(obj):
