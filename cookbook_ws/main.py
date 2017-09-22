@@ -3,7 +3,7 @@ from sqlalchemy import inspect
 from werkzeug.utils import redirect
 
 from cookbook_ws import app, orm, db
-from cookbook_ws.orm import RecipeType, Recipe
+from cookbook_ws.orm import RecipeType, Recipe, RecipeNote
 
 
 @app.route("/")
@@ -54,20 +54,26 @@ def reset_db():
     return redirect(url_for('show_recipe', recipe_id=1))
 
 
-def object_as_dict(obj):
-    return {c.key: getattr(obj, c.key) for c in inspect(obj).mapper.column_attrs}
+@app.route('/new_note', methods=['GET', 'POST'])
+def new_note():
 
+    if request.method == 'POST':
+        print(request)
+        print(request.form)
+        recipe_id = request.form['recipe_id']
+        text = request.form['new-note']
 
-def row2dict(row):
-    d = {}
-    for column in row.__table__.columns:
-        d[column.name] = str(getattr(row, column.name))
+        if text is not None:
+            recipe = Recipe.query.filter_by(id=recipe_id).first()
+            recipe.notes.append(RecipeNote(note_text=text))
 
-    return d
+            # db.session.update(recipe)
+            db.session.commit()
 
+        return redirect(url_for('show_recipe', recipe_id=recipe_id))
 
-def todict(row):
-    return row.s
+    if request.method == 'GET':
+        return redirect(url_for('admin'))
 
 
 @app.route("/export")

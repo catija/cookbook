@@ -65,28 +65,45 @@
     </section>
 
 	<section>
-		<header class="major">
-			<h2>Notes</h2>
-		</header>
         <div class="row">
-            <div class="12u 12u$(large)">
-
-            {% for note in recipe.notes %}
-                <div class="panel-heading collapsed" data-toggle="collapse" data-target="#note_{{note.id}}">
-                     <h3>
-                         <i class="fa fa-fw fa-chevron-down"></i>
-                        <i class="fa fa-fw fa-chevron-right"></i>
-
-                        {{ note.create_date }}
-                    </h3>
-                </div>
-
-                <div id="note_{{note.id}}" class="box collapse">
-                    {{ note.note_text | safe }}
-                </div>
-            {% endfor %}
+            <div class="8u 12u$(medium)">
+                <h3>Notes</h3>
+            </div>
+            <div class="4u 12u$(medium)" align="right">
             </div>
         </div>
+        <form method="post"
+              action="{{ url_for('new_note') }}"
+              enctype="multipart/form-data">
+            <input type="hidden" name="recipe_id" value="{{ recipe.id }}">
+            <div class="row uniform">
+                <div class="12u 12u$(medium)">
+                    <textarea name="new-note" id="new-note" placeholder="Enter your note" rows="6"></textarea>
+                </div>
+                <div class="12u 12u$(medium)">
+                    <ul class="actions">
+                        <li>
+                            <input href="#" type="submit" class="special" value="Add New Note"></input>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </form>
+        {% for note in recipe.notes %}
+            <div class="panel-heading collapsed" data-toggle="collapse" data-target="#note_{{note.id}}">
+                <h3>
+                    <i class="fa fa-fw fa-chevron-down"></i>
+                    <i class="fa fa-fw fa-chevron-right"></i>
+                    {{ note.create_date }}
+                </h3>
+            </div>
+
+            <div id="note_{{note.id}}" class="collapse">
+                {{ note.note_text | safe }}
+            </div>
+
+        {% endfor %}
+        <hr>
     </section>
 
 {% endblock %}
