@@ -68,31 +68,25 @@
 		<header class="major">
 			<h2>Notes</h2>
 		</header>
-		<div class="posts">
+        <div class="row">
+            <div class="12u 12u$(large)">
+
             {% for note in recipe.notes %}
-            <article>
-
-                <h3>
-                    {{ note.create_date }}
-                </h3>
-                    <div class="collapsed" data-toggle="collapse" data-target="#note_{{note.id}}">
-
-                        <i class="fa fa-fw fa-chevron-down"></i>
+                <div class="panel-heading collapsed" data-toggle="collapse" data-target="#note_{{note.id}}">
+                     <h3>
+                         <i class="fa fa-fw fa-chevron-down"></i>
                         <i class="fa fa-fw fa-chevron-right"></i>
-                    </div>
 
-                <div id="note_{{note.id}}" class="collapse">
+                        {{ note.create_date }}
+                    </h3>
+                </div>
+
+                <div id="note_{{note.id}}" class="box collapse">
                     {{ note.note_text | safe }}
                 </div>
-            </article>
-        <!--<dl>-->
-            <!--<dt class="panel-heading collapsed" data-toggle="collapse" data-target="#note_{{note.id}}">-->
-                <!--<i class="fa fa-fw fa-chevron-down"></i>-->
-                <!--<i class="fa fa-fw fa-chevron-right"></i>-->
-                <!--Note</dt>-->
-            <!--<dd id="note_{{note.id}}" class="collapse">-->
-            <!--</dd>-->
-        <!--</dl>-->
-        {% endfor %}
+            {% endfor %}
+            </div>
+        </div>
+    </section>
 
 {% endblock %}
