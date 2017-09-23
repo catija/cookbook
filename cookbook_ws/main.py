@@ -1,3 +1,5 @@
+import json
+
 from flask import render_template, jsonify, request, url_for
 from sqlalchemy import inspect
 from werkzeug.utils import redirect
@@ -92,6 +94,21 @@ def export():
     return response
 
 
+def _import(recipes):
+
+    db.drop_all()
+    db.create_all()
+
+    for recipe_dict in recipes:
+        print("Adding Recipe: {}".format(recipe_dict))
+        imported_recipe = Recipe.deserialize(recipe_dict)
+        print("Adding Recipe: {}".format(imported_recipe))
+        db.session.add(imported_recipe)
+
+    print("Committing new recipes")
+    db.session.commit()
+
+
 @app.route('/import', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
@@ -112,7 +129,10 @@ def upload_file():
         #                             filename=filename))
 
         if file:
-            print(file.read())
+            recipe_dicts = json.loads(file.read())
+            print(recipe_dicts)
+            jsonify(recipe_dicts)
+            _import(recipe_dicts)
             # TODO: Add decode logic here and submit to database.
 
         return redirect(url_for('welcome'))
