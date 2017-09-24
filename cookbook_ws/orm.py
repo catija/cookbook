@@ -5,6 +5,48 @@ from fractions import Fraction
 from cookbook_ws import db
 
 
+def _serialize(model_instance):
+    """
+    Common serialization method.  Serializes top-level elements into dictionary.
+    Args:
+        model_instance (db.Model): SQL Alchemy object instance
+    """
+    d = {}
+    for column in model_instance.__table__.columns:
+        if getattr(model_instance, column.name) is None:
+            continue
+        if isinstance(column.type, db.DateTime):
+            d[column.name] = datetime.datetime.strftime(getattr(model_instance, column.name), "%Y-%m-%d %H:%M:%S")
+        elif isinstance(column.type, db.Float):
+            d[column.name] = float(getattr(model_instance, column.name))
+        else:
+            d[column.name] = getattr(model_instance, column.name)
+    return d
+
+
+def _deserialize(model_class, data_dict):
+    """
+    Common serialization method.  deserializes top-level elements from dictionary.
+    Args:
+        model_class (db.Model.cls): SQL Alchemy class constructor
+        data_dict (dict): dictionary containing data for class
+    """
+    deser = model_class()
+
+    for column in deser.__table__.columns:
+
+        if column.name in data_dict:
+            if isinstance(column.type, db.DateTime):
+                setattr(deser, column.name,
+                        datetime.datetime.strptime(data_dict[column.name], "%Y-%m-%d %H:%M:%S"))
+            elif isinstance(column.type, db.Float):
+                setattr(deser, column.name, float(data_dict[column.name]))
+            else:
+                setattr(deser, column.name, data_dict[column.name])
+
+    return deser
+
+
 class RecipeType(db.Model):
     __tablename__ = 'recipe_type'
     id = db.Column(db.Integer, primary_key=True)
@@ -12,10 +54,11 @@ class RecipeType(db.Model):
 
     @property
     def serialize(self):
-        d = {}
-        for column in self.__table__.columns:
-            d[column.name] = str(getattr(self, column.name))
-        return d
+        return _serialize(self)
+
+    @classmethod
+    def deserialize(cls, recipe_dict):
+        return _deserialize(cls, recipe_dict)
 
 
 class Recipe(db.Model):
@@ -37,14 +80,35 @@ class Recipe(db.Model):
 
     @property
     def serialize(self):
-        d = {}
-        for column in self.__table__.columns:
-            d[column.name] = str(getattr(self, column.name))
+        d = _serialize(self)
 
         d['recipe_type'] = self.recipe_type.serialize
         d['steps'] = [step.serialize for step in self.steps]
         d['ingredients'] = [ingredient.serialize for ingredient in self.ingredients]
+        d['notes'] = [note.serialize for note in self.notes]
+
         return d
+
+    @classmethod
+    def deserialize(cls, recipe_dict):
+        d_recipe = _deserialize(cls, recipe_dict)
+
+        existing_recipe_type = db.session.query(RecipeType).filter(RecipeType.name == 'Stove Top').first()
+        if existing_recipe_type is None:
+            d_recipe.recipe_type = RecipeType.deserialize(recipe_dict['recipe_type'])
+        else:
+            d_recipe.recipe_type = existing_recipe_type
+
+        if 'ingredients' in recipe_dict:
+            d_recipe.ingredients = [RecipeIngredient.deserialize(i) for i in recipe_dict['ingredients']]
+
+        if 'steps' in recipe_dict:
+            d_recipe.steps = [RecipeStep.deserialize(i) for i in recipe_dict['steps']]
+
+        if 'notes' in recipe_dict:
+            d_recipe.notes = [RecipeNote.deserialize(i) for i in recipe_dict['notes']]
+
+        return d_recipe
 
 
 class RecipeIngredient(db.Model):
@@ -60,10 +124,11 @@ class RecipeIngredient(db.Model):
 
     @property
     def serialize(self):
-        d = {}
-        for column in self.__table__.columns:
-            d[column.name] = str(getattr(self, column.name))
-        return d
+        return _serialize(self)
+
+    @classmethod
+    def deserialize(cls, recipe_dict):
+        return _deserialize(cls, recipe_dict)
 
     @property
     def amount_fract(self):
@@ -84,10 +149,11 @@ class RecipeStep(db.Model):
 
     @property
     def serialize(self):
-        d = {}
-        for column in self.__table__.columns:
-            d[column.name] = str(getattr(self, column.name))
-        return d
+        return _serialize(self)
+
+    @classmethod
+    def deserialize(cls, recipe_dict):
+        return _deserialize(cls, recipe_dict)
 
 
 class RecipeNote(db.Model):
@@ -99,10 +165,11 @@ class RecipeNote(db.Model):
 
     @property
     def serialize(self):
-        d = {}
-        for column in self.__table__.columns:
-            d[column.name] = str(getattr(self, column.name))
-        return d
+        return _serialize(self)
+
+    @classmethod
+    def deserialize(cls, recipe_dict):
+        return _deserialize(cls, recipe_dict)
 
 
 def initialize():
