@@ -1,0 +1,32 @@
+Recipe:
+    type: object
+    required:
+        - name
+    properties:
+        - description:
+            type: string
+            description: Name of the recipe.
+            default: "blah"
+        - notes:
+            type: array
+            description: The text content of the note.
+            items:
+                $ref: '#/definitions/RecipeNote'
+RecipeNote:
+    type: object
+    required:
+        - text
+    properties:
+       - id:
+           type: integer
+           description: The note key number.
+           default: 1
+       - recipe_id:
+           type: integer
+           description: The associated recipe key number.
+           default: 1
+       - text:
+           type: string
+           description: The text content of the note.
+           default: 1
+
