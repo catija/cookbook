@@ -1,3 +1,4 @@
+import datetime
 import json
 
 from flask import render_template, jsonify, request, url_for
@@ -7,6 +8,13 @@ from werkzeug.utils import redirect
 from cookbook_ws import app, orm, db
 from cookbook_ws.orm import RecipeType, Recipe, RecipeNote
 
+
+@app.template_filter('datetime')
+def _jinja2_filter_datetime(date):
+
+    date = date.replace(tzinfo=datetime.timezone.utc).astimezone(tz=None)
+    format = '%b %d, %Y at %-I:%M %p'
+    return date.strftime(format)
 
 @app.route("/")
 def welcome():

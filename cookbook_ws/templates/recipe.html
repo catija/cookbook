@@ -67,11 +67,22 @@
 	<section>
         <div class="row">
             <div class="8u 12u$(medium)">
-                <h3>Notes</h3>
+                <h2>Notes</h2>
             </div>
             <div class="4u 12u$(medium)" align="right">
             </div>
         </div>
+        {% for note in recipe.notes %}
+            <header class="major">
+                <h3>
+                    Added {{ note.create_date | datetime}}
+                </h3>
+            </header>
+            <div>
+                {{ note.note_text | safe }}
+            </div>
+        {% endfor %}
+        <hr>
         <form method="post"
               action="{{ url_for('new_note') }}"
               enctype="multipart/form-data">
@@ -89,21 +100,7 @@
                 </div>
             </div>
         </form>
-        {% for note in recipe.notes %}
-            <div class="panel-heading collapsed" data-toggle="collapse" data-target="#note_{{note.id}}">
-                <h3>
-                    <i class="fa fa-fw fa-chevron-down"></i>
-                    <i class="fa fa-fw fa-chevron-right"></i>
-                    {{ note.create_date }}
-                </h3>
-            </div>
 
-            <div id="note_{{note.id}}" class="collapse">
-                {{ note.note_text | safe }}
-            </div>
-
-        {% endfor %}
-        <hr>
     </section>
 
 {% endblock %}
