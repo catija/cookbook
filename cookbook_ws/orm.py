@@ -4,6 +4,29 @@ import logging
 from fractions import Fraction
 from cookbook_ws import db
 
+def convert_to_mixed_numeral(num):
+    """Format a number as a mixed fraction.
+
+    Examples:
+        convert_to_mixed_numeral('-55/10') # '-5 1/2'
+        convert_to_mixed_numeral(-55/10) # '-5 1/2'
+        convert_to_mixed_numeral(-5.5) # '-5 1/2'
+
+    Args:
+        num (int|float|str): The number to format. It is coerced into a string.
+
+    Returns:
+        str: ``num`` formatted as a mixed fraction.
+
+    """
+    num = Fraction(str(num)) # use str(num) to prevent floating point inaccuracies
+    n, d = (num.numerator, num.denominator)
+    m, p = divmod(abs(n), d)
+    if n < 0:
+        m = -m
+    return '{} {}/{}'.format(m, p, d) if m != 0 and p > 0 \
+        else '{}'.format(m) if m != 0 \
+        else '{}/{}'.format(n, d)
 
 def _serialize(model_instance):
     """
@@ -137,7 +160,7 @@ class RecipeIngredient(db.Model):
         Returns:
             str: fraction
         """
-        return str(Fraction(self.amount))
+        return convert_to_mixed_numeral(self.amount)
 
 
 class RecipeStep(db.Model):
@@ -263,3 +286,41 @@ def initialize():
     db.session.add(new_recipe)
 
     db.session.commit()
+
+    new_recipe = Recipe(name='Cream Biscuits',
+                        description=("Short of a box mix, the cream biscuit is by far the simplest biscuit formula"
+                            " out there. Dry ingredients are whisked together and heavy cream is gently"
+                            " stirred in. That's it. In fact, the biscuit dough will probably be ready"
+                            " before your oven has fully preheated. But don't be fooled by the simplicity"
+                            " of this recipe—it might not contain any butter, but heavy cream is full of"
+                            " butterfat that makes the biscuits light and tender with a rich, milky flavor."))
+    new_recipe.steps = [
+                    RecipeStep(step_number=1,
+                                   description="In a large bowl, whisk together flour, baking powder, salt, and sugar."),
+                    RecipeStep(step_number=2,
+                                   description=("Add heavy cream and stir gently with a wooden spoon until dry"
+                            "ingredients are just moistened")),
+                    RecipeStep(step_number=3,
+                                    description=("Turn out dough onto a lighted floured work surface."
+                            " Using your hands, fold it one or two times so it becomes a cohesive mass and press it"
+                            " down to an even ½-inch thickness. Using a 2-inch round cookie-cutter, cut out biscuits"
+                            " as closely together as possible. Gather together scraps, pat down, and cut out more"
+                            " biscuits. Discard any remaining scraps.")),
+                    RecipeStep(step_number=4,
+                                    description=("Bake the biscuits in a 400°F oven until risen and"
+                            " golden, about 12-15 minutes. Let cool slightly and serve warm. "))]
+
+    new_recipe.ingredients = [RecipeIngredient(name="all purpose flour", amount=11, amount_units="ounces"),
+                              RecipeIngredient(name="baking powder", amount=1.5, amount_units="tablespoons"),
+                              RecipeIngredient(name="kosher salt", amount=1, amount_units="teaspoon"),
+                              RecipeIngredient(name="sugar", amount=1, amount_units="tablespoon"),
+                              RecipeIngredient(name="heavy whipping cream", amount=1.5, amount_units="cups")]
+    new_recipe.recipe_type = new_recipe_type
+    new_recipe.source = "from Serious Eats"
+    new_recipe.source_url = "http://www.seriouseats.com/recipes/2014/06/light-tender-cream-biscuits-recipe.html"
+    new_recipe.total_served = 4
+
+    db.session.add(new_recipe)
+
+    db.session.commit()
+
