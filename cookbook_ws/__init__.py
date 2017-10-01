@@ -52,12 +52,11 @@ swagger_config = {
     "definitions": yaml.load(open('cookbook_ws/static/definitions.yaml', 'r'))
 }
 
-print(yaml.load(open('cookbook_ws/static/definitions.yaml', 'r')))
-
+# print(yaml.load(open('cookbook_ws/static/definitions.yaml', 'r')))
 
 swagger = Swagger(app, template=template, config=swagger_config)
 
-print(swagger.config['definitions'])
+# print(swagger.config['definitions'])
 
 from cookbook_ws.api import api_page
 
