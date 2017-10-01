@@ -39,7 +39,7 @@ def _serialize(model_instance):
         if getattr(model_instance, column.name) is None:
             continue
         if isinstance(column.type, db.DateTime):
-            d[column.name] = datetime.datetime.strftime(getattr(model_instance, column.name), "%Y-%m-%d %H:%M:%S")
+            d[column.name] = datetime.datetime.strftime(getattr(model_instance, column.name), "%b %d, %Y at %-I:%M %p")
         elif isinstance(column.type, db.Float):
             d[column.name] = float(getattr(model_instance, column.name))
         else:
@@ -61,7 +61,7 @@ def _deserialize(model_class, data_dict):
         if column.name in data_dict:
             if isinstance(column.type, db.DateTime):
                 setattr(deser, column.name,
-                        datetime.datetime.strptime(data_dict[column.name], "%Y-%m-%d %H:%M:%S"))
+                        datetime.datetime.strptime(data_dict[column.name], "%b %d, %Y at %-I:%M %p"))
             elif isinstance(column.type, db.Float):
                 setattr(deser, column.name, float(data_dict[column.name]))
             else:

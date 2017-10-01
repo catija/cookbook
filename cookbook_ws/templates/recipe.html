@@ -64,6 +64,8 @@
 
     </section>
 
+
+
 	<section>
         <div class="row">
             <div class="8u 12u$(medium)">
@@ -72,16 +74,20 @@
             <div class="4u 12u$(medium)" align="right">
             </div>
         </div>
+        <div id="notes_section">
         {% for note in recipe.notes %}
-            <header class="major">
-                <h3>
-                    Added {{ note.create_date | datetime}}
-                </h3>
-            </header>
-            <div>
-                {{ note.note_text | safe }}
+            <div id="note_{{note.id}}">
+                <header class="major">
+                    <h3>
+                        Added {{ note.create_date | datetime}}
+                    </h3>
+                </header>
+                <div><p>
+                    {{ note.note_text | safe }}
+                </p></div>
             </div>
         {% endfor %}
+        </div>
         <hr>
         <form method="post"
               action="{{ url_for('new_note') }}"
@@ -94,7 +100,7 @@
                 <div class="12u 12u$(medium)">
                     <ul class="actions">
                         <li>
-                            <input href="#" type="submit" class="special" value="Add New Note"></input>
+                            <input id="new_note_submit" type="button" class="special" value="Add New Note" />
                         </li>
                     </ul>
                 </div>
@@ -103,4 +109,85 @@
 
     </section>
 
+
+<script>
+    document.getElementById("new_note_submit").addEventListener("click", submit_with_ajax);
+
+    function submit_with_ajax()
+    {
+        console.log("Submitting..." + $(this))
+        var formElement = $(this).closest('form');
+        console.log("Found form element:" + formElement);
+        console.log("Found form element:" + formElement.find('[name="new-note"]').val());
+
+        var note_text_element = formElement.find('[name="new-note"]').first();
+        var dataObject = { 'new-note': note_text_element.val() };
+
+        $.ajax({
+            url: '{{ url_for('api.post_recipe_note', recipe_id=recipe.id) }}',
+            type: 'POST',
+            contentType: 'application/json',
+            // data: JSON.stringify(dataObject),
+            data: dataObject['new-note'],
+            success: function(result) {
+                // window.location.reload(true);
+                console.log(result)
+                note_text_element.val("");
+                add_note(result);
+        }
+        });
+    }
+
+    function add_note(note_json)
+    {
+        new_note = note_json; //JSON.parse(note_json)
+
+        // What we want is this:
+        //
+        //    <div id="note_{-{note.id}}">
+        //        <header class="major">
+        //            <h3>
+        //                Added {-{ note.create_date | datetime}}
+        //            </h3>
+        //        </header>
+        //        <div><p>
+        //            {-{ note.note_text | safe }}
+        //       </p></div>
+        //    </div>
+        //
+
+        // Official way (modifying the document DOM
+        //
+        // notes_section = document.getElementById("notes_section")
+        //
+        // var note_div = document.createElement("div");
+        // note_div.id = "note_"+ new_note['id'];
+        //
+        // var header = document.createElement("header");
+        // header.setAttribute("class", "major");
+        //
+        // var h3 = document.createElement("h3");
+        //
+        // var text_node = document.createTextNode("Added " + new_note['create_date']);
+        //
+        // var content_node = document.createElement("p");
+        // var content_text_node = document.createTextNode(new_note['note_text']);
+        //
+        // h3.appendChild(text_node);
+        // header.appendChild(h3);
+        // note_div.appendChild(header);
+        //
+        // content_node.appendChild(content_text_node)
+        // note_div.appendChild(content_node);
+        //
+        // document.getElementById("notes_section").appendChild(note_div);
+
+        // Using JQuery to insert HTML
+
+        html_string = "<div id='note_"+ new_note['id'] +"'><header class='major'>"
+        html_string += "<h3>Added " + new_note['create_date'] + "</h3></header>"
+        html_string += "<p>" + new_note['note_text'] + "</p></div>"
+        $('#notes_section').append(html_string);
+    }
+</script>
 {% endblock %}
