@@ -4,6 +4,7 @@ import logging
 from fractions import Fraction
 from cookbook_ws import db
 
+
 def convert_to_mixed_numeral(num):
     """Format a number as a mixed fraction.
 
@@ -27,6 +28,7 @@ def convert_to_mixed_numeral(num):
     return '{} {}/{}'.format(m, p, d) if m != 0 and p > 0 \
         else '{}'.format(m) if m != 0 \
         else '{}/{}'.format(n, d)
+
 
 def _serialize(model_instance):
     """
@@ -139,8 +141,12 @@ class RecipeIngredient(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(250), nullable=False)
     recipe_id = db.Column(db.Integer, db.ForeignKey('recipe.id'), nullable=False)
+    pre_measure = db.Column(db.String(250), nullable=True)
+    post_measure = db.Column(db.String(250), nullable=True)
     amount = db.Column(db.Float, nullable=True)
-    amount_units = db.Column(db.String(250), nullable=True)
+    amount_units_id = db.Column(db.Integer, db.ForeignKey('unit.id'), nullable=True)
+    amount_units = db.relationship("IngredientUnit")
+    divided = db.Column(db.Boolean, nullable=False, default=False)
 
     def __repr__(self):
         return "{} {} {}".format(self.amount, self.amount_units, self.name)
@@ -161,6 +167,23 @@ class RecipeIngredient(db.Model):
             str: fraction
         """
         return convert_to_mixed_numeral(self.amount)
+
+
+class IngredientUnit(db.Model):
+    __tablename__ = 'unit'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(250), nullable=False)
+    plural = db.Column(db.String(250), nullable=False)
+    abbr = db.Column(db.String(10), nullable=True)
+    pl_abbr = db.Column(db.String(10), nullable=True)
+
+    @property
+    def serialize(self):
+        return _serialize(self)
+
+    @classmethod
+    def deserialize(cls, recipe_dict):
+        return _deserialize(cls, recipe_dict)
 
 
 class RecipeStep(db.Model):
@@ -211,6 +234,12 @@ def initialize():
     db.session.add(RecipeType(name="Broiling"))
     db.session.commit()
 
+    cup_unit = IngredientUnit(name="cup", plural="cups", abbr="c")
+    tsp_unit = IngredientUnit(name="teaspoon", plural="teaspoons", abbr="tsp")
+    tbsp_unit = IngredientUnit(name="tablespoon", plural="tablespoons", abbr="tbsp")
+    ounce_unit = IngredientUnit(name="ounce", plural="ounces", abbr="oz")
+    pound_unit = IngredientUnit(name="pound", plural="pounds", abbr="lb")
+
     new_recipe_type = db.session.query(RecipeType).filter(RecipeType.name == 'Stove Top')[0]
 
     # Insert a Recipe in the person table
@@ -229,12 +258,12 @@ def initialize():
                                    description="Serve.")]
 
     new_recipe.ingredients = [
-        RecipeIngredient(name="oats", amount=1, amount_units="cup"),
-        RecipeIngredient(name="water", amount=2, amount_units="cup"),
-        RecipeIngredient(name="apple cider", amount=1, amount_units="cup"),
-        RecipeIngredient(name="brown sugar", amount=1, amount_units="tablespoon"),
-        RecipeIngredient(name="cinnamon", amount=0.125, amount_units="teaspoon"),
-        RecipeIngredient(name="salt", amount=0.25, amount_units="teaspoon")
+        RecipeIngredient(name="oats", amount=1, amount_units=cup_unit),
+        RecipeIngredient(name="water", amount=2, amount_units=cup_unit),
+        RecipeIngredient(name="apple cider", amount=1, amount_units=cup_unit),
+        RecipeIngredient(name="brown sugar", amount=1, amount_units=tbsp_unit),
+        RecipeIngredient(name="cinnamon", amount=0.125, amount_units=tsp_unit),
+        RecipeIngredient(name="salt", amount=0.25, amount_units=tsp_unit)
     ]
 
     new_recipe.recipe_type = new_recipe_type
@@ -264,12 +293,13 @@ def initialize():
                                description="Serve.")]
 
     new_recipe.ingredients = [
-        RecipeIngredient(name="unsalted butter, cut into 4 pieces", amount=12, amount_units="tablespoons"),
-        RecipeIngredient(name="heavy cream", amount=3, amount_units="tablespoons"),
-        RecipeIngredient(name="sugar", amount=1, amount_units="teaspoon"),
-        RecipeIngredient(name=("sweet potatoes (2 large or 3 medium) "
-                               "peeled, quartered lengthwise and cut into 1/4 inch slices"),
-                         amount=2, amount_units="pounds"),
+        RecipeIngredient(name="unsalted butter", amount=12, amount_units=tbsp_unit,
+                         post_measure="cut into 4 pieces"),
+        RecipeIngredient(name="heavy cream", amount=3, amount_units=tbsp_unit, divided=True),
+        RecipeIngredient(name="sugar", amount=1, amount_units=tsp_unit),
+        RecipeIngredient(name="sweet potatoes (2 large or 3 medium)",
+                         amount=2, amount_units=pound_unit,
+                         post_measure="peeled, quartered lengthwise and cut into 1/4 inch slices"),
         RecipeIngredient(name="salt and pepper")
     ]
 
@@ -310,11 +340,11 @@ def initialize():
                                     description=("Bake the biscuits in a 400°F oven until risen and"
                             " golden, about 12-15 minutes. Let cool slightly and serve warm. "))]
 
-    new_recipe.ingredients = [RecipeIngredient(name="all purpose flour", amount=11, amount_units="ounces"),
-                              RecipeIngredient(name="baking powder", amount=1.5, amount_units="tablespoons"),
-                              RecipeIngredient(name="kosher salt", amount=1, amount_units="teaspoon"),
-                              RecipeIngredient(name="sugar", amount=1, amount_units="tablespoon"),
-                              RecipeIngredient(name="heavy whipping cream", amount=1.5, amount_units="cups")]
+    new_recipe.ingredients = [RecipeIngredient(name="all purpose flour", amount=11, amount_units=ounce_unit),
+                              RecipeIngredient(name="baking powder", amount=1.5, amount_units=tbsp_unit),
+                              RecipeIngredient(name="kosher salt", amount=1, amount_units=tsp_unit),
+                              RecipeIngredient(name="sugar", amount=1, amount_units=tbsp_unit),
+                              RecipeIngredient(name="heavy whipping cream", amount=1.5, amount_units=cup_unit)]
     new_recipe.recipe_type = new_recipe_type
     new_recipe.source = "from Serious Eats"
     new_recipe.source_url = "http://www.seriouseats.com/recipes/2014/06/light-tender-cream-biscuits-recipe.html"

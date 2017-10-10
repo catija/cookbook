@@ -5,7 +5,7 @@ from flask import render_template, jsonify, request, url_for
 from werkzeug.utils import redirect
 
 from cookbook_ws import app, orm, db
-from cookbook_ws.orm import RecipeType, Recipe, RecipeNote
+from cookbook_ws.orm import RecipeType, Recipe, RecipeNote, IngredientUnit
 
 
 @app.template_filter('datetime')
@@ -63,12 +63,17 @@ def edit_recipe(recipe_id=None):
 
     recipe_types = db.session.query(RecipeType)
 
+    ingredient_units = db.session.query(IngredientUnit)
+
     if recipe_id is not None:
         recipe = Recipe.query.filter_by(id=recipe_id).first()
     else:
         recipe = None
 
-    return render_template("edit_recipe.html", recipe_types=recipe_types, recipe=recipe)
+    return render_template("edit_recipe.html",
+                           recipe_types=recipe_types,
+                           ingredient_units=ingredient_units,
+                           recipe=recipe)
 
 
 @app.route("/reset")

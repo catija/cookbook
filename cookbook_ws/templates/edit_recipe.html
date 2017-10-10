@@ -44,26 +44,40 @@
             </div>
         </div>
         <div class="row">
-            <div class="6u 12u$(small)">
+            <div class="12u 12u$(small)">
                 <h2>Ingredients</h2>
                 <table id="ingredient_table">
                     <tbody>
                     {% for ingredient in recipe.ingredients %}
                         <tr>
                             <td align="right" width="10%">
-                                <input type="number" placeholder="0" value="{{ingredient.amount}}">
+                                <input type="number" placeholder="0" value="{{ingredient.amount}}" size="10">
                             </td>
                             <td>
                                 <select>
                                     <option value="">- Units -</option>
-                                    <option value="1">Teaspoon</option>
-                                    <option value="1">Tablespoon</option>
-                                    <option value="1">Cup</option>
-                                    <option value="1">Ounce</option>
+                                    {% for unit in ingredient_units  %}
+                                    <option value="{{unit.id}}" {% if ingredient.amount_units_id == unit.id %}
+                                            selected {% endif %}>{{unit.name}}</option>
+                                    {% endfor %}
                                 </select>
                             </td>
                             <td>
-                                <input type="text" placeholder="Ingredient Name" value="{{ ingredient.name }}">
+                                <input type="text" placeholder="Pre-measurement processing"
+                                       value="{{ ingredient.pre_measure if ingredient.pre_measure }}">
+                            </td>
+                            <td>
+                                <input type="text" placeholder="Ingredient Name"
+                                       value="{{ ingredient.name }}">
+                            </td>
+                            <td>
+                                <input type="text" placeholder="Post-measurement processing"
+                                       value="{{ ingredient.post_measure if ingredient.post_measure }}">
+                            </td>
+                            <td>
+                                <input type="checkbox" id="divided_{{ingredient.id}}" name="divided"
+                                       {{ 'checked' if ingredient.divided }}>
+                                <label for="divided_{{ingredient.id}}">Divided</label>
                             </td>
                         </tr>
                     {% endfor %}
@@ -72,13 +86,24 @@
                         <td>
                             <select>
                                 <option value="">- Units -</option>
-                                <option value="1">Teaspoon</option>
-                                <option value="1">Tablespoon</option>
-                                <option value="1">Cup</option>
-                                <option value="1">Ounce</option>
+                                {% for unit in ingredient_units  %}
+                                <option value="{{unit.id}}">{{unit.name}}</option>
+                                {% endfor %}
                             </select>
                         </td>
-                        <td><input type="text" placeholder="Ingredient Name"></td>
+                        <td>
+                            <input type="text" placeholder="Pre-measurement processing">
+                        </td>
+                        <td>
+                            <input type="text" placeholder="Ingredient Name">
+                        </td>
+                        <td>
+                            <input type="text" placeholder="Post-measurement processing">
+                        </td>
+                        <td>
+                            <input type="checkbox" id="divided" name="divided">
+                            <label for="divided">Divided</label>
+                        </td>
                     </tr>
                     </tbody>
                     <tfoot>
@@ -87,11 +112,6 @@
                         </td>
                     </tfoot>
                 </table>
-            </div>
-            <div class="6u$">
-                <span class="image fit">
-                    <img src="{{ url_for('static', filename='images/kitchen_left.jpg') }}" alt="" />
-                </span>
             </div>
         </div>
 
@@ -141,18 +161,28 @@
 //            );
 
         ingredient_table.append('<tr>' +
-                        '<td align="right" width="10%"><input type="number" placeholder="0"></td>' +
+                        '<td align="right" width="10%"><input type="number" placeholder="?"></td>' +
                         '<td>' +
                         '    <select>' +
                         '        <option value="">- Units -</option>' +
-                        '        <option value="1">Teaspoon</option>' +
-                        '        <option value="1">Tablespoon</option>' +
-                        '        <option value="1">Cup</option>' +
-                        '        <option value="1">Ounce</option>' +
+                        '        {% for unit in ingredient_units  %}' +
+                        '        <option value="{{unit.id}}">{{unit.name}}</option>' +
+                        '        {% endfor %}' +
                         '    </select>' +
                         '</td>' +
-                        '<td><input type="text" placeholder="Ingredient Name"></td>' +
-                        '</tr>')
+                        '<td>' +
+                        '    <input type="text" placeholder="Pre-measurement processing">' +
+                        '</td>' +
+                        '<td>' +
+                        '    <input type="text" placeholder="Ingredient Name">' +
+                        '</td>' +
+                        '<td>' +
+                        '    <input type="text" placeholder="Post-measurement processing">' +
+                        '</td>' +
+                        '<td>' +
+                        '    <input type="checkbox" id="divided" name="divided">' +
+                        '    <label for="divided">Divided</label>' +
+                        '</td>')
 
     }
 
