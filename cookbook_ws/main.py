@@ -2,7 +2,6 @@ import datetime
 import json
 
 from flask import render_template, jsonify, request, url_for
-from sqlalchemy import inspect
 from werkzeug.utils import redirect
 
 from cookbook_ws import app, orm, db
@@ -15,6 +14,7 @@ def _jinja2_filter_datetime(date):
     date = date.replace(tzinfo=datetime.timezone.utc).astimezone(tz=None)
     format = '%b %d, %Y at %-I:%M %p'
     return date.strftime(format)
+
 
 @app.route("/")
 def welcome():
@@ -49,6 +49,26 @@ def show_recipe(recipe_id):
     recipe = Recipe.query.filter_by(id=recipe_id).first()
 
     return render_template("recipe.html", recipe_types=recipe_types, recipe=recipe)
+
+
+@app.route("/edit_recipe")
+@app.route("/edit_recipe/<int:recipe_id>")
+def edit_recipe(recipe_id=None):
+    """
+    This method returns a edit-recipe page.
+
+    Args:
+        recipe_id (int): Integer recipe identifier.
+    """
+
+    recipe_types = db.session.query(RecipeType)
+
+    if recipe_id is not None:
+        recipe = Recipe.query.filter_by(id=recipe_id).first()
+    else:
+        recipe = None
+
+    return render_template("edit_recipe.html", recipe_types=recipe_types, recipe=recipe)
 
 
 @app.route("/reset")

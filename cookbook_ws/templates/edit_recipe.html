@@ -1,0 +1,167 @@
+{% extends "layout.html" %}
+
+{% block header %}
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+
+{% endblock %}
+
+{% block body %}
+
+<!-- Header -->
+    <header id="header">
+        <a href="{{ url_for('welcome') }}" class="logo"><strong>Catija's</strong> Cookbook</a>
+    </header>
+
+<!-- Content -->
+    <form>
+    <section>
+        <br>
+        <header class="main">
+            <table class="alt">
+                <tr>
+                    <td>Title: </td><td><input type="text" value="{{ recipe.name }}" placeholder="Recipe Name"></td>
+                </tr>
+                <tr>
+                    <td>Source: </td><td><input type="text" value="{{ recipe.source }}" placeholder="Source Description"></td>
+                </tr>
+                <tr>
+                    <td>Source URL: </td><td><input type="text" value="{{ recipe.source_url }}" placeholder="Source URL"></td>
+                </tr>
+            </table>
+        </header>
+
+        <div class="row">
+            <div class="12u 12u$(large)">
+                <textarea placeholder="Description of recipe.">{{ recipe.description }}</textarea>
+                <br>
+            </div>
+        </div>
+        <div class="row">
+            <div class="6u 12u$(small)">
+                <h2>Ingredients</h2>
+                <table id="ingredient_table">
+                    <tbody>
+                    {% for ingredient in recipe.ingredients %}
+                        <tr>
+                            <td align="right" width="10%">
+                                <input type="number" placeholder="0" value="{{ingredient.amount}}">
+                            </td>
+                            <td>
+                                <select>
+                                    <option value="">- Units -</option>
+                                    <option value="1">Teaspoon</option>
+                                    <option value="1">Tablespoon</option>
+                                    <option value="1">Cup</option>
+                                    <option value="1">Ounce</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="text" placeholder="Ingredient Name" value="{{ ingredient.name }}">
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    <tr>
+                        <td align="right" width="10%"><input type="number" placeholder="?"></td>
+                        <td>
+                            <select>
+                                <option value="">- Units -</option>
+                                <option value="1">Teaspoon</option>
+                                <option value="1">Tablespoon</option>
+                                <option value="1">Cup</option>
+                                <option value="1">Ounce</option>
+                            </select>
+                        </td>
+                        <td><input type="text" placeholder="Ingredient Name"></td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                        <td colspan="3">
+                            <input class="button fit" type="button" id="add_ingredient" value="Add Additional Ingredient"/>
+                        </td>
+                    </tfoot>
+                </table>
+            </div>
+            <div class="6u$">
+                <span class="image fit">
+                    <img src="{{ url_for('static', filename='images/kitchen_left.jpg') }}" alt="" />
+                </span>
+            </div>
+        </div>
+
+        <h2>Instructions</h2>
+
+        <ol id="step_list">
+            {% for step in recipe.steps %}
+                <li><br>
+                    <textarea placeholder="Description of recipe step.">{{ step.description }}</textarea>
+                </li>
+            {% endfor %}
+            <li>
+                <br>
+                <textarea placeholder="Description of new recipe step."></textarea>
+            </li>
+        </ol>
+        <input class="button fit" type="button" id="add_step" value="Add Additional Step"/>
+
+        <table class="alt">
+            <tr>
+                <td>Servings: </td><td><input type="number" value="{{ recipe.total_served }}" placeholder="Recipe Name"></td>
+            </tr>
+        </table>
+
+        <input class="button fit" type="button" value="Save Recipe"/>
+
+    </section>
+    </form>
+
+<script>
+    document.getElementById("add_ingredient").addEventListener("click", add_ingredient);
+    document.getElementById("add_step").addEventListener("click", add_step);
+
+    function add_ingredient()
+    {
+        console.log("Adding ingredient row..." + $(this))
+        var ingredient_table = $('#ingredient_table');
+
+//        $('#ingredient_table').find('tbody')
+//            .append($('<tr>')
+//                .append($('<td>')
+//                    .append($('<img>')
+//                        .attr('src', 'img.png')
+//                        .text('Image cell')
+//                    )
+//                )
+//            );
+
+        ingredient_table.append('<tr>' +
+                        '<td align="right" width="10%"><input type="number" placeholder="0"></td>' +
+                        '<td>' +
+                        '    <select>' +
+                        '        <option value="">- Units -</option>' +
+                        '        <option value="1">Teaspoon</option>' +
+                        '        <option value="1">Tablespoon</option>' +
+                        '        <option value="1">Cup</option>' +
+                        '        <option value="1">Ounce</option>' +
+                        '    </select>' +
+                        '</td>' +
+                        '<td><input type="text" placeholder="Ingredient Name"></td>' +
+                        '</tr>')
+
+    }
+
+    function add_step()
+    {
+        console.log("Adding new step..." + $(this))
+        var step_list = $('#step_list');
+        step_list.append('<li><br><textarea placeholder="Description of new recipe step."></textarea></li>')
+
+    }
+</script>
+{% endblock %}
