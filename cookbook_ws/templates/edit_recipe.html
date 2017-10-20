@@ -63,10 +63,10 @@
                     {% for ingredient in recipe.ingredients %}
                         <tr>
                             <td align="right" width="10%">
-                                <input type="number" placeholder="0" value="{{ingredient.amount}}" size="10">
+                                <input type="number" placeholder="0" name="ingredient-amount" value="{{ingredient.amount}}" size="10">
                             </td>
                             <td>
-                                <select>
+                                <select name="ingredient-units">
                                     <option value="">- Units -</option>
                                     {% for unit in ingredient_units  %}
                                     <option value="{{unit.id}}" {% if ingredient.amount_units_id == unit.id %}
@@ -75,26 +75,31 @@
                                 </select>
                             </td>
                             <td>
-                                <input type="text" placeholder="Pre-measurement processing"
+                                <input type="text" placeholder="Pre-measurement processing" name="ingredient-pre-proc"
+                                       value="{{ ingredient.pre_measure if ingredient.pre_measure }}">
                             </td>
                             <td>
+                                <input type="hidden" name="ingredient-id" value="{{ ingredient.id }}">
                                 <input type="text" placeholder="Ingredient Name"
+                                       name="ingredient-name"
                                        value="{{ ingredient.name }}">
                             </td>
                             <td>
-                                <input type="text" placeholder="Post-measurement processing"
+                                <input type="text" placeholder="Post-measurement processing" name="ingredient-post-proc"
                                        value="{{ ingredient.post_measure if ingredient.post_measure }}">
                             </td>
                             <td>
-                                <input type="checkbox" id="divided_{{ingredient.id}}" name="divided" {{ 'checked' if ingredient.divided }} >
+                                <input type="checkbox" id="divided_{{ingredient.id}}" name="ingredient-divided" {{ 'checked' if ingredient.divided }} >
                                 <label for="divided_{{ingredient.id}}">Divided</label>
                             </td>
                         </tr>
                     {% endfor %}
                     <tr>
-                        <td align="right" width="10%"><input type="number" placeholder="?"></td>
+                        <td align="right" width="10%">
+                            <input type="number" placeholder="0" name="ingredient-amount" value="0" >
+                        </td>
                         <td>
-                            <select>
+                            <select name="ingredient-units">
                                 <option value="">- Units -</option>
                                 {% for unit in ingredient_units  %}
                                 <option value="{{unit.id}}">{{unit.name}}</option>
@@ -102,16 +107,16 @@
                             </select>
                         </td>
                         <td>
-                            <input type="text" placeholder="Pre-measurement processing">
+                            <input type="text" name="ingredient-pre-proc" placeholder="Pre-measurement processing">
                         </td>
                         <td>
-                            <input type="text" placeholder="Ingredient Name">
+                            <input type="text" name="ingredient-name" placeholder="Ingredient Name">
                         </td>
                         <td>
-                            <input type="text" placeholder="Post-measurement processing">
+                            <input type="text" name="ingredient-post-proc" placeholder="Post-measurement processing">
                         </td>
                         <td>
-                            <input type="checkbox" id="divided" name="divided">
+                            <input type="checkbox" id="divided" name="ingredient-divided" name="divided">
                             <label for="divided">Divided</label>
                         </td>
                     </tr>
@@ -130,12 +135,13 @@
         <ol id="step_list">
             {% for step in recipe.steps %}
                 <li><br>
-                    <textarea placeholder="Description of recipe step.">{{ step.description }}</textarea>
+                    <input type="hidden" name="recipe-step-id" value="{{ step.id }}">
+                    <textarea name="recipe-step" placeholder="Description of recipe step.">{{ step.description }}</textarea>
                 </li>
             {% endfor %}
             <li>
                 <br>
-                <textarea placeholder="Description of new recipe step."></textarea>
+                <textarea name="recipe-step" placeholder="Description of new recipe step."></textarea>
             </li>
         </ol>
         <input class="button fit" type="button" id="add_step" value="Add Additional Step"/>
@@ -211,17 +217,71 @@
         var recipe_desc_element = formElement.find('[name="recipe-desc"]').first();
         var total_served_element = formElement.find('[name="recipe-served"]').first();
         var recipe_type_element = formElement.find('[name="recipe-type"]').first();
+
         var dataObject = { 'name': recipe_name_element.val(),
                            'source': recipe_source_element.val(),
                            'source_url': recipe_src_url_element.val(),
                            'description': recipe_desc_element.val(),
                            'total_served': total_served_element.val(),
-                           'recipe_type_id': recipe_type_element.find(":selected").val()
+                           'recipe_type_id': recipe_type_element.find(":selected").val(),
+                           'ingredients': [],
+                           'steps': []
         };
+
+        var ingredient_table = $('#ingredient_table');
+        $(ingredient_table).children('tbody').children('tr').each( function( table_row_index, table_row_element ) {
+            console.log( table_row_index + ": " + table_row_element );
+            var ingredient_name_element = $(table_row_element).find('[name="ingredient-name"]').first();
+            var ingredient_id_element = $(table_row_element).find('[name="ingredient-id"]').first();
+            var ingredient_pre_proc_element = $(table_row_element).find('[name="ingredient-pre-proc"]').first();
+            var ingredient_post_proc_element = $(table_row_element).find('[name="ingredient-post-proc"]').first();
+            var ingredient_divided_element = $(table_row_element).find('[name="ingredient-divided"]').first();
+            var ingredient_amount_element = $(table_row_element).find('[name="ingredient-amount"]').first();
+            var ingredient_units_element = $(table_row_element).find('[name="ingredient-units"]').first();
+
+            if (ingredient_name_element.val() != '')
+            {
+                var ingredient = {
+                    'id': ingredient_id_element.val(),
+                    'name': ingredient_name_element.val(),
+                    'pre_measure': ingredient_pre_proc_element.val(),
+                    'post_measure': ingredient_post_proc_element.val(),
+                    'divided': ingredient_divided_element[0].checked,
+                    'amount_units_id': ingredient_units_element.find(":selected").val(),
+                    'amount': ingredient_amount_element.val(),
+                }
+
+                console.log("Built ingredient:" + JSON.stringify(ingredient));
+
+                dataObject['ingredients'].push(ingredient)
+            }
+        });
+
+        var step_table = $('#step_list');
+        $(step_table).children('li').each( function( table_row_index, table_row_element ) {
+            console.log( table_row_index + ": " + table_row_element );
+            var recipe_step_element = $(table_row_element).find('[name="recipe-step"]').first();
+            var recipe_step_id_element = $(table_row_element).find('[name="recipe-step-id"]').first();
+
+            if (recipe_step_element.val() != '')
+            {
+                var recipe_step = {
+                    'id': recipe_step_id_element.val(),
+                    'description': recipe_step_element.val(),
+                    'step_number': table_row_index+1,
+                }
+
+                console.log("Built recipe-step:" + JSON.stringify(recipe_step));
+
+                dataObject['steps'].push(recipe_step)
+            }
+        });
 
         if ("{{recipe}}" != "None") {
             dataObject['id'] = "{{ recipe.id }}";
         }
+
+        console.log("Built recipe:" + JSON.stringify(dataObject));
 
         $.ajax({
             url: '{{ url_for('api.post_recipe') }}',
