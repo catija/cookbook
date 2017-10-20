@@ -26,20 +26,32 @@
         <header class="main">
             <table class="alt">
                 <tr>
-                    <td>Title: </td><td><input type="text" value="{{ recipe.name }}" placeholder="Recipe Name"></td>
+                    <td>Title: </td><td><input type="text" value="{{ recipe.name }}" name="recipe-name" placeholder="Recipe Name"></td>
                 </tr>
                 <tr>
-                    <td>Source: </td><td><input type="text" value="{{ recipe.source }}" placeholder="Source Description"></td>
+                    <td>Source: </td><td><input type="text" value="{{ recipe.source }}" name="recipe-source" placeholder="Source Description"></td>
                 </tr>
                 <tr>
-                    <td>Source URL: </td><td><input type="text" value="{{ recipe.source_url }}" placeholder="Source URL"></td>
+                    <td>Source URL: </td><td><input type="text" value="{{ recipe.source_url }}" name="recipe-source-url" placeholder="Source URL"></td>
+                </tr>
+                <tr>
+                    <td>Recipe Type: </td><td>
+                        <select name="recipe-type">
+                            <option value="">- Recipe Type -</option>
+                            {% for recipe_type in recipe_types %}
+                            <option value="{{recipe_type.id}}" {% if recipe.recipe_type_id == recipe_type.id %}
+                                    selected {% endif %}>{{recipe_type.name}}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </td>
                 </tr>
             </table>
         </header>
 
         <div class="row">
             <div class="12u 12u$(large)">
-                <textarea placeholder="Description of recipe.">{{ recipe.description }}</textarea>
+                <textarea name="recipe-desc" placeholder="Description of recipe.">{{ recipe.description }}</textarea>
                 <br>
             </div>
         </div>
@@ -64,7 +76,6 @@
                             </td>
                             <td>
                                 <input type="text" placeholder="Pre-measurement processing"
-                                       value="{{ ingredient.pre_measure if ingredient.pre_measure }}">
                             </td>
                             <td>
                                 <input type="text" placeholder="Ingredient Name"
@@ -75,8 +86,7 @@
                                        value="{{ ingredient.post_measure if ingredient.post_measure }}">
                             </td>
                             <td>
-                                <input type="checkbox" id="divided_{{ingredient.id}}" name="divided"
-                                       {{ 'checked' if ingredient.divided }}>
+                                <input type="checkbox" id="divided_{{ingredient.id}}" name="divided" {{ 'checked' if ingredient.divided }} >
                                 <label for="divided_{{ingredient.id}}">Divided</label>
                             </td>
                         </tr>
@@ -132,11 +142,11 @@
 
         <table class="alt">
             <tr>
-                <td>Servings: </td><td><input type="number" value="{{ recipe.total_served }}" placeholder="Recipe Name"></td>
+                <td>Servings: </td><td><input type="number" value="{{ recipe.total_served }}" name="recipe-served" placeholder="Number Served"></td>
             </tr>
         </table>
 
-        <input class="button fit" type="button" value="Save Recipe"/>
+        <input class="button fit" type="button" id="recipe_submit" value="Save Recipe"/>
 
     </section>
     </form>
@@ -144,21 +154,12 @@
 <script>
     document.getElementById("add_ingredient").addEventListener("click", add_ingredient);
     document.getElementById("add_step").addEventListener("click", add_step);
+    document.getElementById("recipe_submit").addEventListener("click", submit_recipe);
 
     function add_ingredient()
     {
         console.log("Adding ingredient row..." + $(this))
         var ingredient_table = $('#ingredient_table');
-
-//        $('#ingredient_table').find('tbody')
-//            .append($('<tr>')
-//                .append($('<td>')
-//                    .append($('<img>')
-//                        .attr('src', 'img.png')
-//                        .text('Image cell')
-//                    )
-//                )
-//            );
 
         ingredient_table.append('<tr>' +
                         '<td align="right" width="10%"><input type="number" placeholder="?"></td>' +
@@ -192,6 +193,46 @@
         var step_list = $('#step_list');
         step_list.append('<li><br><textarea placeholder="Description of new recipe step."></textarea></li>')
 
+    }
+
+    function submit_recipe()
+    {
+        console.log("Submitting..." + $(this))
+        console.log("{{recipe}}")
+
+        var formElement = $(this).closest('form');
+        console.log("Found form element:" + formElement);
+        console.log("Found form element:" + formElement.find('[name="recipe-name"]').val());
+
+
+        var recipe_name_element = formElement.find('[name="recipe-name"]').first();
+        var recipe_source_element = formElement.find('[name="recipe-source"]').first();
+        var recipe_src_url_element = formElement.find('[name="recipe-source-url"]').first();
+        var recipe_desc_element = formElement.find('[name="recipe-desc"]').first();
+        var total_served_element = formElement.find('[name="recipe-served"]').first();
+        var recipe_type_element = formElement.find('[name="recipe-type"]').first();
+        var dataObject = { 'name': recipe_name_element.val(),
+                           'source': recipe_source_element.val(),
+                           'source_url': recipe_src_url_element.val(),
+                           'description': recipe_desc_element.val(),
+                           'total_served': total_served_element.val(),
+                           'recipe_type_id': recipe_type_element.find(":selected").val()
+        };
+
+        if ("{{recipe}}" != "None") {
+            dataObject['id'] = "{{ recipe.id }}";
+        }
+
+        $.ajax({
+            url: '{{ url_for('api.post_recipe') }}',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(dataObject),
+            success: function(result) {
+                console.log(result)
+               // window.location = window.location.origin + "/recipe/" + result['id']
+        }
+        });
     }
 </script>
 {% endblock %}
