@@ -98,9 +98,9 @@ class Recipe(db.Model):
     total_served = db.Column(db.Integer, nullable=True)
     recipe_type_id = db.Column(db.Integer, db.ForeignKey('recipe_type.id'), nullable=True)
     recipe_type = db.relationship("RecipeType")
-    ingredients = db.relationship("RecipeIngredient")
-    steps = db.relationship("RecipeStep")
-    notes = db.relationship("RecipeNote")
+    ingredients = db.relationship("RecipeIngredient", cascade="all, delete-orphan")
+    steps = db.relationship("RecipeStep", cascade="all, delete-orphan")
+    notes = db.relationship("RecipeNote", cascade="all, delete-orphan")
     create_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     @property
@@ -140,7 +140,7 @@ class RecipeIngredient(db.Model):
     __tablename__ = 'ingredient'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(250), nullable=False)
-    recipe_id = db.Column(db.Integer, db.ForeignKey('recipe.id'), nullable=False)
+    recipe_id = db.Column(db.Integer, db.ForeignKey('recipe.id', ondelete='CASCADE'), nullable=False)
     pre_measure = db.Column(db.String(250), nullable=True)
     post_measure = db.Column(db.String(250), nullable=True)
     amount = db.Column(db.Float, nullable=True)
@@ -189,7 +189,7 @@ class IngredientUnit(db.Model):
 class RecipeStep(db.Model):
     __tablename__ = "recipe_step"
     id = db.Column(db.Integer, primary_key=True)
-    recipe_id = db.Column(db.Integer, db.ForeignKey('recipe.id'), nullable=False)
+    recipe_id = db.Column(db.Integer, db.ForeignKey('recipe.id', ondelete='CASCADE'), nullable=False)
     step_number = db.Column(db.Integer, nullable=False)
     description = db.Column(db.String(250), nullable=False)
 
@@ -205,7 +205,7 @@ class RecipeStep(db.Model):
 class RecipeNote(db.Model):
     __tablename__ = "recipe_note"
     id = db.Column(db.Integer, primary_key=True)
-    recipe_id = db.Column(db.Integer, db.ForeignKey('recipe.id'), nullable=False)
+    recipe_id = db.Column(db.Integer, db.ForeignKey('recipe.id', ondelete='CASCADE'), nullable=False)
     create_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     note_text = db.Column(db.String(250), nullable=False)
 
@@ -293,7 +293,7 @@ def initialize():
                                description="Serve.")]
 
     new_recipe.ingredients = [
-        RecipeIngredient(name="unsalted butter", amount=12, amount_units=tbsp_unit,
+        RecipeIngredient(name="unsalted butter", amount=4, amount_units=tbsp_unit,
                          post_measure="cut into 4 pieces"),
         RecipeIngredient(name="heavy cream", amount=3, amount_units=tbsp_unit, divided=True),
         RecipeIngredient(name="sugar", amount=1, amount_units=tsp_unit),
