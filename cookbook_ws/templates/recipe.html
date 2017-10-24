@@ -17,12 +17,18 @@
 <!-- Header -->
     <header id="header">
         <a href="{{ url_for('welcome') }}" class="logo"><strong>Catija's</strong> Cookbook</a>
+        <ul class="icons">
+            <li><a href="{{ url_for('edit_recipe', recipe_id=recipe.id)}}" class="icon fa-edit"><span class="label">Edit</span></a></li>
+            <li><a href="#" class="icon fa-clone"><span class="label">Clone</span></a></li>
+            <li><a href="#" class="icon fa-trash"><span class="label">Delete</span></a></li>
+        </ul>
     </header>
 
 <!-- Content -->
     <section>
         <header class="main">
             <h1>{{ recipe.name }}</h1>
+
             {% if recipe.source_url %}
                 <p>Source: <a href="{{ recipe.source_url }}"> {{ recipe.source }} </a></p>
             {% elif recipe.source %}
@@ -33,6 +39,12 @@
         <div class="row">
             <div class="12u 12u$(large)">
                 <p>{{ recipe.description }}</p>
+            </div>
+            <div class="6u 12u$(large)">
+                <p>Category: {{ recipe.recipe_type.name }}</p>
+            </div>
+            <div class="6u 12u$(large)">
+                <p><b>Date Added: {{ recipe.create_date | datetime }}</b></p>
             </div>
         </div>
         <div class="row">
