@@ -39,10 +39,12 @@
             <div class="6u 12u$(small)">
                 <h2>Ingredients</h2>
                 <table>
-                    {% for ingredient in recipe.ingredients %}
+                    {% for item in recipe.ingredients %}
                         <tr>
-                            <td align="right" width="10%">{{ ingredient.amount_fract if ingredient.amount else '' }}</td>
-                            <td>{{ ingredient.amount_units if ingredient.amount_units else '' }} {{ ingredient.name }}</td>
+                            <td align="right" width="10%">{{ item.amount_fract if item.amount }}</td>
+                            <td>{{ item.amount_units.name if item.amount_units }}
+                                {{ item.pre_measure if item.pre_measure }}
+                                {{ item.name }}{{ ', ' + item.post_measure if item.post_measure}}{{ ', divided' if item.divided }}</td>
                         </tr>
                     {% endfor %}
                 </table>

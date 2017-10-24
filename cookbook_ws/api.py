@@ -174,3 +174,31 @@ def get_recipe_note(recipe_id, note_id):
 
     return jsonify(recipe_note.serialize)
 
+
+@api_page.route('/recipe/<int:recipe_id>', methods=['PUT'])
+def put_recipe(recipe_id):
+    recipe = Recipe.query.filter_by(id=recipe_id).first()
+    return jsonify(recipe.serialize)
+
+
+@api_page.route('/recipe', methods=['POST'])
+def post_recipe():
+
+    print(request.json)
+    text = request.get_data().decode('UTF-8')
+    data = request.get_json()
+
+    print("Adding recipe:{}".format(text))
+    print(data)
+
+    if text is not None:
+        recipe = Recipe.deserialize(data)
+
+        print(recipe.serialize)
+        recipe = db.session.merge(recipe)
+        db.session.commit()
+
+        print(recipe.serialize)
+
+    return redirect(url_for('api.get_recipe', recipe_id=recipe.id))
+

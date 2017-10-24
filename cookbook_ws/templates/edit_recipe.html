@@ -1,0 +1,314 @@
+{% extends "layout.html" %}
+
+{% block header %}
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+
+{% endblock %}
+
+{% block body %}
+
+<!-- Header -->
+    <header id="header">
+        <a href="{{ url_for('welcome') }}" class="logo"><strong>Catija's</strong> Cookbook</a>
+    </header>
+
+<!-- Content -->
+    <form>
+    <section>
+        <br>
+        <header class="main">
+            <table class="alt">
+                <tr>
+                    <td>Title: </td><td><input type="text" value="{{ recipe.name }}" name="recipe-name" placeholder="Recipe Name"></td>
+                </tr>
+                <tr>
+                    <td>Source: </td><td><input type="text" value="{{ recipe.source }}" name="recipe-source" placeholder="Source Description"></td>
+                </tr>
+                <tr>
+                    <td>Source URL: </td><td><input type="text" value="{{ recipe.source_url }}" name="recipe-source-url" placeholder="Source URL"></td>
+                </tr>
+                <tr>
+                    <td>Recipe Type: </td><td>
+                        <select name="recipe-type">
+                            <option value="">- Recipe Type -</option>
+                            {% for recipe_type in recipe_types %}
+                            <option value="{{recipe_type.id}}" {% if recipe.recipe_type_id == recipe_type.id %}
+                                    selected {% endif %}>{{recipe_type.name}}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </header>
+
+        <div class="row">
+            <div class="12u 12u$(large)">
+                <textarea name="recipe-desc" placeholder="Description of recipe.">{{ recipe.description }}</textarea>
+                <br>
+            </div>
+        </div>
+        <div class="row">
+            <div class="12u 12u$(small)">
+                <h2>Ingredients</h2>
+                <table id="ingredient_table">
+                    <tbody>
+                    {% for ingredient in recipe.ingredients %}
+                        <tr>
+                            <td><a name="remove_ingredient" class="icon fa-remove"></a></td>
+                            <td align="right" width="10%">
+                                <input type="number" placeholder="0" name="ingredient-amount" value="{{ingredient.amount}}" size="10">
+                            </td>
+                            <td>
+                                <select name="ingredient-units">
+                                    <option value="">- Units -</option>
+                                    {% for unit in ingredient_units  %}
+                                    <option value="{{unit.id}}" {% if ingredient.amount_units_id == unit.id %}
+                                            selected {% endif %}>{{unit.name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td>
+                                <input type="text" placeholder="Pre-measurement processing" name="ingredient-pre-proc"
+                                       value="{{ ingredient.pre_measure if ingredient.pre_measure }}">
+                            </td>
+                            <td>
+                                <input type="hidden" name="ingredient-id" value="{{ ingredient.id }}">
+                                <input type="text" placeholder="Ingredient Name"
+                                       name="ingredient-name"
+                                       value="{{ ingredient.name }}">
+                            </td>
+                            <td>
+                                <input type="text" placeholder="Post-measurement processing" name="ingredient-post-proc"
+                                       value="{{ ingredient.post_measure if ingredient.post_measure }}">
+                            </td>
+                            <td>
+                                <input type="checkbox" id="divided_{{ingredient.id}}" name="ingredient-divided" {{ 'checked' if ingredient.divided }} >
+                                <label for="divided_{{ingredient.id}}">Divided</label>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    <tr>
+                        <td></td>
+                        <td align="right" width="10%">
+                            <input type="number" placeholder="0" name="ingredient-amount" value="0" >
+                        </td>
+                        <td>
+                            <select name="ingredient-units">
+                                <option value="">- Units -</option>
+                                {% for unit in ingredient_units  %}
+                                <option value="{{unit.id}}">{{unit.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td>
+                            <input type="text" name="ingredient-pre-proc" placeholder="Pre-measurement processing">
+                        </td>
+                        <td>
+                            <input type="text" name="ingredient-name" placeholder="Ingredient Name">
+                        </td>
+                        <td>
+                            <input type="text" name="ingredient-post-proc" placeholder="Post-measurement processing">
+                        </td>
+                        <td>
+                            <input type="checkbox" id="divided" name="ingredient-divided" name="divided">
+                            <label for="divided">Divided</label>
+                        </td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                        <td colspan="3">
+                            <input class="button fit" type="button" id="add_ingredient" value="Add Additional Ingredient"/>
+                        </td>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <h2>Instructions</h2>
+
+        <ol id="step_list">
+            {% for step in recipe.steps %}
+                <li><a name="remove_step" class="icon fa-remove"></a><br>
+                    <input type="hidden" name="recipe-step-id" value="{{ step.id }}">
+                    <textarea name="recipe-step" placeholder="Description of recipe step.">{{ step.description }}</textarea>
+                </li>
+            {% endfor %}
+            <li>
+                <br>
+                <textarea name="recipe-step" placeholder="Description of new recipe step."></textarea>
+            </li>
+        </ol>
+        <input class="button fit" type="button" id="add_step" value="Add Additional Step"/>
+
+        <table class="alt">
+            <tr>
+                <td>Servings: </td><td><input type="number" value="{{ recipe.total_served }}" name="recipe-served" placeholder="Number Served"></td>
+            </tr>
+        </table>
+
+        <input class="button fit" type="button" id="recipe_submit" value="Save Recipe"/>
+
+    </section>
+    </form>
+
+<script>
+    document.getElementById("add_ingredient").addEventListener("click", add_ingredient);
+    document.getElementById("add_step").addEventListener("click", add_step);
+    document.getElementById("recipe_submit").addEventListener("click", submit_recipe);
+    $('[name="remove_ingredient"]').click(remove_ingredient);
+    $('[name="remove_step"]').click(remove_step);
+
+    function add_ingredient()
+    {
+        console.log("Adding ingredient row..." + $(this))
+        var ingredient_table = $('#ingredient_table');
+
+        ingredient_table.append('<tr>' +
+                        '<td align="right" width="10%"><input type="number" placeholder="?"></td>' +
+                        '<td>' +
+                        '    <select>' +
+                        '        <option value="">- Units -</option>' +
+                        '        {% for unit in ingredient_units  %}' +
+                        '        <option value="{{unit.id}}">{{unit.name}}</option>' +
+                        '        {% endfor %}' +
+                        '    </select>' +
+                        '</td>' +
+                        '<td>' +
+                        '    <input type="text" placeholder="Pre-measurement processing">' +
+                        '</td>' +
+                        '<td>' +
+                        '    <input type="text" placeholder="Ingredient Name">' +
+                        '</td>' +
+                        '<td>' +
+                        '    <input type="text" placeholder="Post-measurement processing">' +
+                        '</td>' +
+                        '<td>' +
+                        '    <input type="checkbox" id="divided" name="divided">' +
+                        '    <label for="divided">Divided</label>' +
+                        '</td>')
+
+    }
+
+    function remove_ingredient()
+    {
+         $(this).closest('tr').remove();
+         return false;
+    }
+
+    function add_step()
+    {
+        console.log("Adding new step..." + $(this))
+        var step_list = $('#step_list');
+        step_list.append('<li><br><textarea placeholder="Description of new recipe step."></textarea></li>')
+
+    }
+
+    function remove_step()
+    {
+         $(this).closest('li').remove();
+         return false;
+    }
+
+    function submit_recipe()
+    {
+        console.log("Submitting..." + $(this))
+        console.log("{{recipe}}")
+
+        var formElement = $(this).closest('form');
+        console.log("Found form element:" + formElement);
+        console.log("Found form element:" + formElement.find('[name="recipe-name"]').val());
+
+
+        var recipe_name_element = formElement.find('[name="recipe-name"]').first();
+        var recipe_source_element = formElement.find('[name="recipe-source"]').first();
+        var recipe_src_url_element = formElement.find('[name="recipe-source-url"]').first();
+        var recipe_desc_element = formElement.find('[name="recipe-desc"]').first();
+        var total_served_element = formElement.find('[name="recipe-served"]').first();
+        var recipe_type_element = formElement.find('[name="recipe-type"]').first();
+
+        var dataObject = { 'name': recipe_name_element.val(),
+                           'source': recipe_source_element.val(),
+                           'source_url': recipe_src_url_element.val(),
+                           'description': recipe_desc_element.val(),
+                           'total_served': total_served_element.val(),
+                           'recipe_type_id': recipe_type_element.find(":selected").val(),
+                           'ingredients': [],
+                           'steps': []
+        };
+
+        var ingredient_table = $('#ingredient_table');
+        $(ingredient_table).children('tbody').children('tr').each( function( table_row_index, table_row_element ) {
+            console.log( table_row_index + ": " + table_row_element );
+            var ingredient_name_element = $(table_row_element).find('[name="ingredient-name"]').first();
+            var ingredient_id_element = $(table_row_element).find('[name="ingredient-id"]').first();
+            var ingredient_pre_proc_element = $(table_row_element).find('[name="ingredient-pre-proc"]').first();
+            var ingredient_post_proc_element = $(table_row_element).find('[name="ingredient-post-proc"]').first();
+            var ingredient_divided_element = $(table_row_element).find('[name="ingredient-divided"]').first();
+            var ingredient_amount_element = $(table_row_element).find('[name="ingredient-amount"]').first();
+            var ingredient_units_element = $(table_row_element).find('[name="ingredient-units"]').first();
+
+            if (ingredient_name_element.val() != '')
+            {
+                var ingredient = {
+                    'id': ingredient_id_element.val(),
+                    'name': ingredient_name_element.val(),
+                    'pre_measure': ingredient_pre_proc_element.val(),
+                    'post_measure': ingredient_post_proc_element.val(),
+                    'divided': ingredient_divided_element[0].checked,
+                    'amount_units_id': ingredient_units_element.find(":selected").val(),
+                    'amount': ingredient_amount_element.val(),
+                }
+
+                console.log("Built ingredient:" + JSON.stringify(ingredient));
+
+                dataObject['ingredients'].push(ingredient)
+            }
+        });
+
+        var step_table = $('#step_list');
+        $(step_table).children('li').each( function( table_row_index, table_row_element ) {
+            console.log( table_row_index + ": " + table_row_element );
+            var recipe_step_element = $(table_row_element).find('[name="recipe-step"]').first();
+            var recipe_step_id_element = $(table_row_element).find('[name="recipe-step-id"]').first();
+
+            if (recipe_step_element.val() != '')
+            {
+                var recipe_step = {
+                    'id': recipe_step_id_element.val(),
+                    'description': recipe_step_element.val(),
+                    'step_number': table_row_index+1,
+                }
+
+                console.log("Built recipe-step:" + JSON.stringify(recipe_step));
+
+                dataObject['steps'].push(recipe_step)
+            }
+        });
+
+        if ("{{recipe}}" != "None") {
+            dataObject['id'] = "{{ recipe.id }}";
+        }
+
+        console.log("Built recipe:" + JSON.stringify(dataObject));
+
+        $.ajax({
+            url: '{{ url_for('api.post_recipe') }}',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(dataObject),
+            success: function(result) {
+                console.log(result)
+               // window.location = window.location.origin + "/recipe/" + result['id']
+        }
+        });
+    }
+</script>
+{% endblock %}
