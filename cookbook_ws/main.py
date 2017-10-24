@@ -116,21 +116,33 @@ def export():
     """
     This method exports the contents of the database as a JSON file.
     """
+    units = IngredientUnit.query
     recipes = Recipe.query.order_by(Recipe.create_date)
 
+    ingredient_units = [u.serialize for u in units]
     recipe_dicts = [r.serialize for r in recipes]
 
-    response = jsonify(recipe_dicts)
+    response = jsonify([ingredient_units, recipe_dicts])
     response.headers['Content-Disposition'] = 'attachment; filename=margin_recipes.json'
     response.mimetype = 'text/json'
 
     return response
 
 
-def _import(recipes):
+def _import(units, recipes):
 
     db.drop_all()
     db.create_all()
+
+    for unit in units:
+        print("Adding Unit: {}".format(unit))
+        imported_unit = IngredientUnit.deserialize(unit)
+        print("Adding Unit: {}".format(imported_unit.serialize))
+        db.session.add(imported_unit)
+
+    db.session.commit()
+
+    units = IngredientUnit.query
 
     for recipe_dict in recipes:
         print("Adding Recipe: {}".format(recipe_dict))
@@ -162,10 +174,10 @@ def upload_file():
         #                             filename=filename))
 
         if file:
-            recipe_dicts = json.loads(file.read())
+            units, recipe_dicts = json.loads(file.read())
             print(recipe_dicts)
-            jsonify(recipe_dicts)
-            _import(recipe_dicts)
+            # jsonify(recipe_dicts)
+            _import(units, recipe_dicts)
             # TODO: Add decode logic here and submit to database.
 
         return redirect(url_for('welcome'))
