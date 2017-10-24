@@ -17,6 +17,14 @@
 <!-- Header -->
     <header id="header">
         <a href="{{ url_for('welcome') }}" class="logo"><strong>Catija's</strong> Cookbook</a>
+        <ul class="icons">
+            <li><a href="#" class="icon fa-save"><span class="label">Clone</span></a></li>
+            <li>
+                <a href="{{ url_for('show_recipe', recipe_id=recipe.id)}}" class="icon fa-toggle-left">
+                    <span class="label">Delete</span>
+                </a>
+            </li>
+        </ul>
     </header>
 
 <!-- Content -->
