@@ -70,9 +70,9 @@
                     <tbody>
                     {% for ingredient in recipe.ingredients %}
                         <tr>
-                            <td width="5%"><a name="remove_ingredient" class="icon fa-remove"></a></td>
-                            <td width="5%">
-                                <input type="number" placeholder="0" name="ingredient-amount" value="{{ingredient.amount}}" size="5">
+
+                            <td align="right">
+                                <input type="number" style="width: 70px;" placeholder="0" name="ingredient-amount" value="{{ingredient.amount}}" size="10">
                             </td>
                             <td width="15%">
                                 <select name="ingredient-units">
@@ -101,12 +101,12 @@
                                 <input type="checkbox" id="divided_{{ingredient.id}}" name="ingredient-divided" {{ 'checked' if ingredient.divided }} >
                                 <label for="divided_{{ingredient.id}}">Divided</label>
                             </td>
+                            <td><a name="remove_ingredient" class="icon fa-remove"></a></td>
                         </tr>
                     {% endfor %}
                     <tr>
-                        <td></td>
-                        <td align="right" width="10%">
-                            <input type="number" placeholder="0" name="ingredient-amount" value="0" >
+                        <td align="right">
+                            <input type="number" style="width: 70px;" placeholder="0" name="ingredient-amount" value="0" >
                         </td>
                         <td>
                             <select name="ingredient-units">
@@ -129,6 +129,7 @@
                             <input type="checkbox" id="divided" name="ingredient-divided" name="divided">
                             <label for="divided">Divided</label>
                         </td>
+                        <td></td>
                     </tr>
                     </tbody>
                     <tfoot>
@@ -180,7 +181,7 @@
         var ingredient_table = $('#ingredient_table');
 
         ingredient_table.append('<tr>' +
-                        '<td align="right" width="10%"><input type="number" placeholder="?"></td>' +
+                        '<td align="right"><input type="number" style="width: 70px;" placeholder="0" name="ingredient-amount" value="0"></td>' +
                         '<td>' +
                         '    <select>' +
                         '        <option value="">- Units -</option>' +
