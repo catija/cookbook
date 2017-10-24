@@ -59,11 +59,10 @@ def _deserialize(model_class, data_dict):
     deser = model_class()
 
     for column in deser.__table__.columns:
-
         if column.name in data_dict:
             if isinstance(column.type, db.DateTime):
                 setattr(deser, column.name,
-                        datetime.datetime.strptime(data_dict[column.name], "%b %d, %Y at %-I:%M %p"))
+                        datetime.datetime.strptime(data_dict[column.name], "%b %d, %Y at %I:%M %p"))
             elif isinstance(column.type, db.Float):
                 setattr(deser, column.name, float(data_dict[column.name]))
             else:

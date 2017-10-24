@@ -17,6 +17,14 @@
 <!-- Header -->
     <header id="header">
         <a href="{{ url_for('welcome') }}" class="logo"><strong>Catija's</strong> Cookbook</a>
+        <ul class="icons">
+            <li><a href="#" class="icon fa-save"><span class="label">Clone</span></a></li>
+            <li>
+                <a href="{{ url_for('show_recipe', recipe_id=recipe.id)}}" class="icon fa-toggle-left">
+                    <span class="label">Delete</span>
+                </a>
+            </li>
+        </ul>
     </header>
 
 <!-- Content -->
@@ -62,11 +70,11 @@
                     <tbody>
                     {% for ingredient in recipe.ingredients %}
                         <tr>
-                            <td><a name="remove_ingredient" class="icon fa-remove"></a></td>
-                            <td align="right" width="10%">
-                                <input type="number" placeholder="0" name="ingredient-amount" value="{{ingredient.amount}}" size="10">
+                            <td width="5%"><a name="remove_ingredient" class="icon fa-remove"></a></td>
+                            <td width="5%">
+                                <input type="number" placeholder="0" name="ingredient-amount" value="{{ingredient.amount}}" size="5">
                             </td>
-                            <td>
+                            <td width="15%">
                                 <select name="ingredient-units">
                                     <option value="">- Units -</option>
                                     {% for unit in ingredient_units  %}
@@ -306,7 +314,7 @@
             data: JSON.stringify(dataObject),
             success: function(result) {
                 console.log(result)
-               // window.location = window.location.origin + "/recipe/" + result['id']
+                window.location = window.location.origin + "/recipe/" + result['id']
         }
         });
     }
