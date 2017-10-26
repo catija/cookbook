@@ -85,7 +85,8 @@
                             </td>
                             <td>
                                 <input type="text" placeholder="Pre-measurement processing" name="ingredient-pre-proc"
-                                       value="{{ ingredient.pre_measure if ingredient.pre_measure }}">
+                                       value="{{ ingredient.pre_measure if ingredient.pre_measure }}"
+                                       title="Pre-measurement processing. Use this to write 'sifted' if your ingredient is 'sifted flour'.">
                             </td>
                             <td>
                                 <input type="hidden" name="ingredient-id" value="{{ ingredient.id }}">
@@ -117,7 +118,8 @@
                             </select>
                         </td>
                         <td>
-                            <input type="text" name="ingredient-pre-proc" placeholder="Pre-measurement processing">
+                            <input type="text" name="ingredient-pre-proc" placeholder="Pre-measurement processing"
+                            title="Pre-measurement processing. Use this to write 'sifted' if your ingredient is 'sifted flour'.">
                         </td>
                         <td>
                             <input type="text" name="ingredient-name" placeholder="Ingredient Name">
@@ -143,18 +145,28 @@
 
         <h2>Instructions</h2>
 
-        <ol id="step_list">
+        <table id="step_list">
             {% for step in recipe.steps %}
-                <li><a name="remove_step" class="icon fa-remove"></a><br>
+            <tr>
+                <td style="width: 3em"align="right">{{ step.step_number }}</td>
+                <td>
+                    <textarea name="recipe-step"
+                              placeholder="Description of recipe step.">{{ step.description }}</textarea>
+                </td>
+                <td style="width: 3em"align="center">
+                    <a name="remove_step" class="icon fa-remove"></a>
                     <input type="hidden" name="recipe-step-id" value="{{ step.id }}">
-                    <textarea name="recipe-step" placeholder="Description of recipe step.">{{ step.description }}</textarea>
-                </li>
+                </td>
+            </tr>
             {% endfor %}
-            <li>
-                <br>
+            <tr>
+                <td></td>
+                <td>
                 <textarea name="recipe-step" placeholder="Description of new recipe step."></textarea>
-            </li>
-        </ol>
+                </td>
+                <td></td>
+            </tr>
+        </table>
         <input class="button fit" type="button" id="add_step" value="Add Additional Step"/>
 
         <table class="alt">
@@ -174,6 +186,12 @@
     document.getElementById("recipe_submit").addEventListener("click", submit_recipe);
     $('[name="remove_ingredient"]').click(remove_ingredient);
     $('[name="remove_step"]').click(remove_step);
+    $('textarea').each(function () {
+      this.setAttribute('style', 'height:' + (this.scrollHeight) + 'px;overflow-y:hidden;');
+      }).on('input', function () {
+      this.style.height = 'auto';
+      this.style.height = (this.scrollHeight) + 'px';
+      });
 
     function add_ingredient()
     {
@@ -191,7 +209,7 @@
                         '    </select>' +
                         '</td>' +
                         '<td>' +
-                        '    <input type="text" placeholder="Pre-measurement processing">' +
+                        '    <input type="text" placeholder="Pre-measurement processing" title="Pre-measurement processing. Use this to write \'sifted\' if your ingredient is \'sifted\' flour.">' +
                         '</td>' +
                         '<td>' +
                         '    <input type="text" placeholder="Ingredient Name">' +
@@ -216,7 +234,13 @@
     {
         console.log("Adding new step..." + $(this))
         var step_list = $('#step_list');
-        step_list.append('<li><br><textarea placeholder="Description of new recipe step."></textarea></li>')
+        step_list.append('<tr>' +
+                '<td></td>' +
+                '<td>' +
+                '<textarea name="recipe-step" placeholder="Description of new recipe step."></textarea>' +
+                '</td>' +
+                '<td></td>' +
+            '</tr>')
 
     }
 
